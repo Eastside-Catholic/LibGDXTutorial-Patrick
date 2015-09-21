@@ -25,7 +25,7 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	
 	@Override
 	public void create () {
-		Gdx.graphics.setDisplayMode(1920, 1080, false);
+		Gdx.graphics.setDisplayMode(1720, 850, false);
 		batch = new SpriteBatch();
 		//font = new BitmapFont();
 		//font.setColor(Color.CYAN);
