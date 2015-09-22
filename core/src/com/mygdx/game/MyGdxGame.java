@@ -25,7 +25,7 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	
 	@Override
 	public void create () {
-		Gdx.graphics.setDisplayMode(1720, 850, false);
+		Gdx.graphics.setDisplayMode(1000, 600, false);
 		batch = new SpriteBatch();
 		//font = new BitmapFont();
 		//font.setColor(Color.CYAN);
@@ -43,6 +43,7 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		pew.setPosition(pewx, pewy);
 		batch.begin();
 		pew.draw(batch);
+		//System.out.println("pewx:" + pewx);
 		//pew.setPosition(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2);
 		batch.end();
 	}
@@ -50,8 +51,6 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	@Override
     public void dispose() {
         batch.dispose();
-        img.dispose();
-        img2.dispose();
     }
 	
 	 @Override
@@ -118,7 +117,6 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
 		pewx = screenX - pew.getWidth()/2;
 		pewy = Gdx.graphics.getHeight() - screenY - pew.getHeight()/2;
-		//pew.setPosition(screenX, screenY);
 		return true;	
 	}
 
