@@ -1,8 +1,5 @@
 package com.mygdx.game;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
@@ -15,70 +12,71 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
 public class MyGdxGame extends ApplicationAdapter implements ApplicationListener , InputProcessor {
 	
 	SpriteBatch batch;
-	BitmapFont font;
-	Texture img, img2;
-	Sprite pew;
-	float pewx = 50, pewy = 50;
-	float speed = 5;
-
+	Vector2 position = new Vector2(50, 50);
+	float speed = 5, delta;
+	Animation animation1;
+	Texture spriteSheet1;
+	TextureRegion currentFrame;
+	TextureRegion[][] frames; //first row 2nd col
+	boolean moving, movingDown, movingUp, movingRight, movingLeft;
+	float frameTime = 0;
+	
+	final int DOWN = 0, LEFT = 1, RIGHT = 2, UP = 3;
+	int direction = 0, prevDirection;
+	
+	
 	@Override
 	public void create () {
-		Gdx.graphics.setDisplayMode(1000, 700, false);
+		Gdx.graphics.setDisplayMode(1000, 600, false);
 		batch = new SpriteBatch();
-		img2 = new Texture("download.jpg");
-		pew = new Sprite(img2);
+		spriteSheet1 = new Texture("image.png");
+		frames = TextureRegion.split(spriteSheet1, spriteSheet1.getWidth()/3, spriteSheet1.getHeight()/4);
 		
+		animation1 = new Animation(.10f, frames[0]);
 		Gdx.input.setInputProcessor(this);
 	}
 
 	@Override
 	public void render () {
+		frameTime += Gdx.graphics.getDeltaTime();
+		currentFrame = animation1.getKeyFrame(frameTime, true);
+		
 		Gdx.gl.glClearColor(0.9f, 0.6f, 0.1f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		
-		pew.setPosition(pewx, pewy);
+		setDirection();
+		calculatePosition();
 		batch.begin();
-		pew.draw(batch);
+		//pew.draw(batch);
+		batch.draw(currentFrame, position.x, position.y);
 		batch.end();
 	}
 	
-	@Override
-    public void dispose() {
-        batch.dispose();
-        img.dispose();
-        img2.dispose();
-    }
 	
-	 @Override
-	 public void resize(int width, int height) {
-	 }
-	
-	@Override
-    public void resume() {
-    }
-	
-	@Override
-    public void pause() {
-    }
 
 	@Override
 	public boolean keyDown(int keycode) {
 		if(keycode == Keys.LEFT){
-            pewx = pewx - speed;
+			movingLeft = true;
         }
         if(keycode == Keys.RIGHT){
-        	pewx = pewx + speed;
+        	movingRight = true;
+        	position.x += speed;
         }
         if(keycode == Keys.UP){
-        	pewy = pewy + speed;
+        	movingUp = true;
+        	position.y += speed;
         }
         if(keycode == Keys.DOWN){
-        	pewy = pewy - speed;
+        	movingDown = true;
+        	position.y -= speed;
         }
         if(keycode == Keys.W){
             speed++;
@@ -89,9 +87,44 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		return false;
 	}
 
+	public void calculatePosition(){
+		if(movingDown)
+			position.y -= speed;
+		if(movingLeft)
+			position.x -= speed;
+		if(movingRight)
+			position.x += speed;
+		if(movingUp)
+			position.y += speed;
+	}
+	
+	public void setDirection(){
+		if(movingDown)
+			direction = DOWN;
+		else if(movingLeft)
+			direction = LEFT;
+		else if(movingRight)
+			direction = RIGHT;
+		else if(movingUp)
+			direction = UP;
+		
+		animation1 = new Animation(.10f, frames[direction]);
+	}
+		
 	@Override
 	public boolean keyUp(int keycode) {
-		// TODO Auto-generated method stub
+		if(keycode == Keys.LEFT){
+            movingLeft = false;
+        }
+        if(keycode == Keys.RIGHT){
+        	movingRight = false;
+        }
+        if(keycode == Keys.UP){
+        	movingUp = false;
+        }
+        if(keycode == Keys.DOWN){
+        	movingDown = false;
+        }
 		return false;
 	}
 
@@ -103,8 +136,8 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		pewx = screenX - pew.getWidth()/2;
-		pewy = Gdx.graphics.getHeight() - screenY - pew.getHeight()/2;
+		position.x = screenX;
+		position.y = Gdx.graphics.getHeight() - screenY - spriteSheet1.getHeight()/4;
 		return true;
 	}
 
@@ -116,9 +149,8 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		pewx = screenX - pew.getWidth()/2;
-		pewy = Gdx.graphics.getHeight() - screenY - pew.getHeight()/2;
-		//pew.setPosition(screenX, screenY);
+		position.x = screenX;
+		position.y = Gdx.graphics.getHeight() - screenY - spriteSheet1.getHeight()/4;
 		return true;	
 	}
 
@@ -133,4 +165,21 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		// TODO Auto-generated method stub
 		return false;
 	}
+	
+	@Override
+    public void dispose() {
+        batch.dispose();
+    }
+	
+	 @Override
+	 public void resize(int width, int height) {
+	 }
+	
+	@Override
+    public void resume() {
+    }
+	
+	@Override
+    public void pause() {
+    }
 }
