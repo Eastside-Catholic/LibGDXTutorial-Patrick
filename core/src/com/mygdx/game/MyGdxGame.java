@@ -16,7 +16,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
 
 public class MyGdxGame extends ApplicationAdapter implements ApplicationListener , InputProcessor {
 	
@@ -41,7 +40,8 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	public void create () {
 		Gdx.graphics.setDisplayMode(1000, 600, false);
 		batch = new SpriteBatch();
-		font = new BitmapFont(Gdx.files.internal("data/arial-15.fnt"),false);
+		font = new BitmapFont();
+		//font = new BitmapFont(Gdx.files.internal("data/arial-15.fnt"),false);
         font.setColor(Color.CYAN);
 		//font = new BitmapFont();
 		//font.setColor(Color.CYAN);
@@ -64,18 +64,16 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		pew.draw(batch);
 		 message = "";
 	        for(int i = 0; i < 5; i++){
-	            if(touches.get(i).touched)
-	                message += "Finger:" + Integer.toString(i) + "touch at:" +
-	                        Float.toString(touches.get(i).touchX) +
-	                        "," +
-	                        Float.toString(touches.get(i).touchY) +
-	                        "\n";
-	                                
+	            if(touches.get(i).touched){
+	            	System.out.println(touches.get(i).touchX);
+	            	System.out.println(touches.get(i).touchY);
+	            	System.out.println(i);
+	            }                                
 	        }
-	        TextBounds tb = font.getBounds(message);
+	        /*(TextBounds tb = font.getBounds(message);
 	        float x = w/2 - tb.width/2;
 	        float y = h/2 + tb.height/2;
-	        font.drawMultiLine(batch, message, x, y);
+	        font.drawMultiLine(batch, message, x, y);*/
 		
 		//System.out.println("pewx:" + pewx);
 		//pew.setPosition(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2);
@@ -143,21 +141,28 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
             touches.get(pointer).touchY = screenY;
             touches.get(pointer).touched = true;
         }
+		//System.out.println("pointer number touchdown is: " + pointer);
 		return true;
 	}
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		if(pointer < 5){
-            touches.get(pointer).touchX = 0;
-            touches.get(pointer).touchY = 0;
-            touches.get(pointer).touched = false;
-        }// TODO Auto-generated method stub
+		/*if(pointer < 5){
+            touches.get(pointer).touchX = screenX;
+            touches.get(pointer).touchY = screenY;
+            touches.get(pointer).touched = true;
+        }*/
+        // TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
+		if(pointer < 5){
+            touches.get(pointer).touchX = screenX;
+            touches.get(pointer).touchY = screenY;
+            touches.get(pointer).touched = true;
+        }
 		pewx = screenX - pew.getWidth()/2;
 		pewy = Gdx.graphics.getHeight() - screenY - pew.getHeight()/2;
 		return true;	
