@@ -38,7 +38,7 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	
 	@Override
 	public void create () {
-		Gdx.graphics.setDisplayMode(1000, 600, false);
+		Gdx.graphics.setDisplayMode(1720, 850, false);
 		batch = new SpriteBatch();
 		font = new BitmapFont();
 		//font = new BitmapFont(Gdx.files.internal("data/arial-15.fnt"),false);
@@ -62,6 +62,7 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		pew.setPosition(pewx, pewy);
 		batch.begin();
 		pew.draw(batch);
+<<<<<<< HEAD
 		 message = "";
 	        for(int i = 0; i < 5; i++){
 	            if(touches.get(i).touched){
@@ -76,6 +77,8 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	        font.drawMultiLine(batch, message, x, y);*/
 		
 		//System.out.println("pewx:" + pewx);
+=======
+>>>>>>> parent of ddceb9f... This has fully functioning cat fun.
 		//pew.setPosition(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2);
 		batch.end();
 	}
@@ -83,6 +86,8 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	@Override
     public void dispose() {
         batch.dispose();
+        img.dispose();
+        img2.dispose();
     }
 	
 	 @Override
@@ -165,6 +170,7 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
         }
 		pewx = screenX - pew.getWidth()/2;
 		pewy = Gdx.graphics.getHeight() - screenY - pew.getHeight()/2;
+		//pew.setPosition(screenX, screenY);
 		return true;	
 	}
 
