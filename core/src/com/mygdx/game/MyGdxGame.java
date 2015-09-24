@@ -21,7 +21,7 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	
 	SpriteBatch batch;
 	Vector2 position = new Vector2(50, 50);
-	float speed = 5, delta;
+	float speed = 1, delta;
 	Animation animation1;
 	Texture spriteSheet1;
 	TextureRegion currentFrame;
@@ -29,8 +29,8 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	boolean moving, movingDown, movingUp, movingRight, movingLeft;
 	float frameTime = 0;
 	
-	final int DOWN = 0, LEFT = 1, RIGHT = 2, UP = 3;
-	int direction = 0, prevDirection;
+	final int DOWN = 0, LEFT = 1, RIGHT = 2, UP = 3, STOP = 4;
+	int direction = 0, previousDirection = 0;
 	
 	
 	@Override
@@ -107,7 +107,10 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 			direction = RIGHT;
 		else if(movingUp)
 			direction = UP;
-		
+		else{
+			animation1 = new Animation(.10f, frames[direction][0]);
+			return;
+		}
 		animation1 = new Animation(.10f, frames[direction]);
 	}
 		
