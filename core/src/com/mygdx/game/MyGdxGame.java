@@ -1,5 +1,5 @@
 package com.mygdx.game;
-
+//Intersector.overlaps(bird.getBoundingCircle(), barUp);
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
