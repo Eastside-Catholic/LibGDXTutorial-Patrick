@@ -13,23 +13,26 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.mygdx.game.*;
+import java.util.List;
+import java.util.ArrayList;
 
 public class MyGdxGame extends ApplicationAdapter implements ApplicationListener , InputProcessor {
 	
 	SpriteBatch batch;
-	Vector2 position = new Vector2(50, 50);
-	float speed = 1, delta;
+	Character hero;
+	float speed = 2, delta;
+	List<Pew> bullets = new ArrayList<Pew>();
 	Animation animation1;
-	Texture spriteSheet1;
+	Texture spriteSheet1, bulletTexture;
 	TextureRegion currentFrame;
-	TextureRegion[][] frames; //first row 2nd col
-	boolean moving, movingDown, movingUp, movingRight, movingLeft;
+	TextureRegion[][] frames; //first row 2nd column
+	boolean moving, movingDown, movingDownLeft, movingLeft, movingUpLeft, movingUp, movingUpRight, movingRight, movingDownRight;
 	float frameTime = 0;
 	
-	final int DOWN = 0, LEFT = 1, RIGHT = 2, UP = 3, STOP = 4;
+	final int DOWN = 0, DOWNLEFT = 1, LEFT = 2, UPLEFT = 3, UP = 4, UPRIGHT = 5, RIGHT = 6, DOWNRIGHT = 7;
 	int direction = 0, previousDirection = 0;
 	
 	
@@ -37,7 +40,9 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	public void create () {
 		Gdx.graphics.setDisplayMode(1000, 600, false);
 		batch = new SpriteBatch();
+		hero = new Character();
 		spriteSheet1 = new Texture("image.png");
+		bulletTexture = new Texture("bullet.png");
 		frames = TextureRegion.split(spriteSheet1, spriteSheet1.getWidth()/3, spriteSheet1.getHeight()/4);
 		
 		animation1 = new Animation(.10f, frames[0]);
@@ -45,57 +50,52 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	}
 
 	@Override
-	public void render () {
+	public void render() {
 		frameTime += Gdx.graphics.getDeltaTime();
 		currentFrame = animation1.getKeyFrame(frameTime, true);
 		
 		Gdx.gl.glClearColor(0.9f, 0.6f, 0.1f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		setDirection();
+		updateBullets();
+		getKeysPressed();
 		calculatePosition();
+		setDirection();
+		//calculatePosition();
 		batch.begin();
 		//pew.draw(batch);
-		batch.draw(currentFrame, position.x, position.y);
+		drawBullets();
+		batch.draw(currentFrame, hero.x, hero.y);
 		batch.end();
 	}
 	
-	
-
-	@Override
-	public boolean keyDown(int keycode) {
-		if(keycode == Keys.LEFT){
+	public void getKeysPressed(){
+		if(Gdx.input.isKeyPressed(Input.Keys.A))
 			movingLeft = true;
-        }
-        if(keycode == Keys.RIGHT){
-        	movingRight = true;
-        	position.x += speed;
-        }
-        if(keycode == Keys.UP){
-        	movingUp = true;
-        	position.y += speed;
-        }
-        if(keycode == Keys.DOWN){
-        	movingDown = true;
-        	position.y -= speed;
-        }
-        if(keycode == Keys.W){
-            speed++;
-        }
-        if(keycode == Keys.S){
-            speed--;
-        }
-		return false;
+		else
+			movingLeft = false;
+		if(Gdx.input.isKeyPressed(Input.Keys.D))
+			movingRight = true;
+		else
+			movingRight = false;
+		if(Gdx.input.isKeyPressed(Input.Keys.W))
+			movingUp = true;
+		else
+			movingUp = false;
+		if(Gdx.input.isKeyPressed(Input.Keys.S))
+			movingDown = true;
+		else
+			movingDown = false;
 	}
 
 	public void calculatePosition(){
 		if(movingDown)
-			position.y -= speed;
+			hero.y -= hero.speed;
 		if(movingLeft)
-			position.x -= speed;
+			hero.x -= hero.speed;
 		if(movingRight)
-			position.x += speed;
+			hero.x += hero.speed;
 		if(movingUp)
-			position.y += speed;
+			hero.y += hero.speed;
 	}
 	
 	public void setDirection(){
@@ -114,20 +114,37 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		animation1 = new Animation(.10f, frames[direction]);
 	}
 		
+	public void updateBullets(){
+		int i = 0;
+		List<Integer> bulletsToDestroy = new ArrayList<Integer>();
+		//This enhanced for loop updates the bullets, then notes the index of ones that should be removed.
+		for(Pew tempPew: bullets){
+			tempPew.update();
+			if(!areCoordsInWindow(tempPew.x, tempPew.y)){
+				bulletsToDestroy.add(i);
+			}
+			i++;
+		}
+		//Cycles through and removes them from the list.
+		for(int x: bulletsToDestroy){
+			bullets.remove(x);
+		}
+	}
+	
+	public void drawBullets(){
+		for(Pew tempPew: bullets){
+			batch.draw(bulletTexture, tempPew.x, tempPew.y);  
+		}
+	}
+	
+	public boolean areCoordsInWindow(float x, float y){
+		if(x < 0 || x > Gdx.graphics.getWidth() || y < 0 || y > Gdx.graphics.getHeight())
+			return false;
+		else
+			return true;
+	}
 	@Override
 	public boolean keyUp(int keycode) {
-		if(keycode == Keys.LEFT){
-            movingLeft = false;
-        }
-        if(keycode == Keys.RIGHT){
-        	movingRight = false;
-        }
-        if(keycode == Keys.UP){
-        	movingUp = false;
-        }
-        if(keycode == Keys.DOWN){
-        	movingDown = false;
-        }
 		return false;
 	}
 
@@ -136,11 +153,19 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		// TODO Auto-generated method stub
 		return false;
 	}
-
+	
+	@Override
+		public boolean keyDown(int keycode) {
+			if(keycode == Keys.SPACE){
+				Pew newPew = new Pew(hero.x, hero.y, 3, 3, 1);
+				bullets.add(newPew);
+			}
+			return false;
+		}
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		position.x = screenX;
-		position.y = Gdx.graphics.getHeight() - screenY - spriteSheet1.getHeight()/4;
+		hero.x = screenX;
+		hero.y = Gdx.graphics.getHeight() - screenY - spriteSheet1.getHeight()/4;
 		return true;
 	}
 
@@ -152,8 +177,8 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		position.x = screenX;
-		position.y = Gdx.graphics.getHeight() - screenY - spriteSheet1.getHeight()/4;
+		hero.x = screenX;
+		hero.y = Gdx.graphics.getHeight() - screenY - spriteSheet1.getHeight()/4;
 		return true;	
 	}
 
