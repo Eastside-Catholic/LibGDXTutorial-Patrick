@@ -3,7 +3,6 @@ package com.mygdx.game;
 import com.badlogic.gdx.Gdx;
 
 public class Pew{
-	final int DOWN = 0, DOWNLEFT = 1, LEFT = 2, UPLEFT = 3, UP = 4, UPRIGHT = 5, RIGHT = 6, DOWNRIGHT = 7;
 	public float x, y, vectorX, vectorY, speed;
 	
 	Pew(float x, float y, int direction, float speed){

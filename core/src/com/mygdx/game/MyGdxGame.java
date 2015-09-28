@@ -50,7 +50,7 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		hero = new Character();
 		spriteSheet1 = new Texture("image.png");
 		bulletTexture = new Texture("bullet.png");
-		frames = TextureRegion.split(spriteSheet1, spriteSheet1.getWidth()/3, spriteSheet1.getHeight()/4);
+		frames = TextureRegion.split(spriteSheet1, spriteSheet1.getWidth()/12, spriteSheet1.getHeight()/8);
 		
 		animation1 = new Animation(.10f, frames[0]);
 		Gdx.input.setInputProcessor(this);
@@ -134,23 +134,24 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	}
 	
 	public void setDirection(){
-		if(movingDown)
+		if(movingDown){
 			direction = DOWN;
-		else if(movingLeft)
+			//animation1 = new Animation(.10f, frames[direction][0]);
+		}else if(movingLeft){
 			direction = LEFT;
-		else if(movingRight)
+		}else if(movingRight){
 			direction = RIGHT;
-		else if(movingUp)
+		}else if(movingUp){
 			direction = UP;
-		else if(movingDownRight)
+		}else if(movingDownRight){
 			direction = DOWNRIGHT;
-		else if(movingDownLeft)
+		}else if(movingDownLeft){
 			direction = DOWNLEFT;
-		else if(movingUpLeft)
+		}else if(movingUpLeft){
 			direction = UPLEFT;
-		else if(movingUpRight)
+		}else if(movingUpRight){
 			direction = UPRIGHT;
-		else{
+		}else{
 			//animation1 = new Animation(.10f, frames[direction][0]);
 			//return;
 		}
