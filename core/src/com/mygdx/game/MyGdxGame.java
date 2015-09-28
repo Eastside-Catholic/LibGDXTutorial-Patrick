@@ -32,7 +32,14 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	boolean moving, movingDown, movingDownLeft, movingLeft, movingUpLeft, movingUp, movingUpRight, movingRight, movingDownRight;
 	float frameTime = 0;
 	
-	final int DOWN = 0, DOWNLEFT = 1, LEFT = 2, UPLEFT = 3, UP = 4, UPRIGHT = 5, RIGHT = 6, DOWNRIGHT = 7;
+	final static int DOWN = 0;
+	final static int DOWNLEFT = 1;
+	final static int LEFT = 2;
+	final static int UPLEFT = 3;
+	final static int UP = 4;
+	final static int UPRIGHT = 5;
+	final static int RIGHT = 6;
+	final static int DOWNRIGHT = 7;
 	int direction = 0, previousDirection = 0;
 	
 	
@@ -56,46 +63,74 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		
 		Gdx.gl.glClearColor(0.9f, 0.6f, 0.1f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		updateBullets();
 		getKeysPressed();
+		setDirection();
 		calculatePosition();
 		setDirection();
-		//calculatePosition();
+		updateBullets();
 		batch.begin();
-		//pew.draw(batch);
 		drawBullets();
 		batch.draw(currentFrame, hero.x, hero.y);
 		batch.end();
 	}
 	
 	public void getKeysPressed(){
-		if(Gdx.input.isKeyPressed(Input.Keys.A))
-			movingLeft = true;
-		else
-			movingLeft = false;
-		if(Gdx.input.isKeyPressed(Input.Keys.D))
+		setAllDirectionsFalse();
+		moving = true;
+		if(Gdx.input.isKeyPressed(Input.Keys.A) && Gdx.input.isKeyPressed(Input.Keys.W)){//make method to set them all to nothing,  then chnage one of the like you have alreadyf
+			movingUpLeft = true;
+			return;
+		}else if (Gdx.input.isKeyPressed(Input.Keys.A) && Gdx.input.isKeyPressed(Input.Keys.S)){
+			movingDownLeft = true;
+			return;
+		}else if(Gdx.input.isKeyPressed(Input.Keys.A)){
+			movingLeft = true;	
+			return;
+		}else if(Gdx.input.isKeyPressed(Input.Keys.D) && Gdx.input.isKeyPressed(Input.Keys.W)){
+			movingUpRight = true;
+			return;
+		}else if (Gdx.input.isKeyPressed(Input.Keys.D) && Gdx.input.isKeyPressed(Input.Keys.S)){
+			movingDownRight = true;
+			return;
+		}else if(Gdx.input.isKeyPressed(Input.Keys.D)){
 			movingRight = true;
-		else
-			movingRight = false;
-		if(Gdx.input.isKeyPressed(Input.Keys.W))
+			return;
+		}else if(Gdx.input.isKeyPressed(Input.Keys.W)){
 			movingUp = true;
-		else
-			movingUp = false;
-		if(Gdx.input.isKeyPressed(Input.Keys.S))
+			return;
+		}else if(Gdx.input.isKeyPressed(Input.Keys.S)){
 			movingDown = true;
-		else
-			movingDown = false;
+			return;
+		}
+		moving = false;
 	}
 
 	public void calculatePosition(){
 		if(movingDown)
 			hero.y -= hero.speed;
+		if(movingDownLeft){		
+			hero.y -= hero.speed;
+			hero.x -= hero.speed;
+		}			
 		if(movingLeft)
 			hero.x -= hero.speed;
-		if(movingRight)
-			hero.x += hero.speed;
+		if(movingUpLeft){
+			hero.y += hero.speed;
+			hero.x -= hero.speed;
+		}
 		if(movingUp)
 			hero.y += hero.speed;
+		if(movingUpRight){
+			hero.y += hero.speed;
+			hero.x += hero.speed;
+		}
+		if(movingRight)
+			hero.x += hero.speed;
+		if(movingDownRight){
+			hero.x += hero.speed;
+			hero.y -= hero.speed;
+		}
+		
 	}
 	
 	public void setDirection(){
@@ -107,11 +142,20 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 			direction = RIGHT;
 		else if(movingUp)
 			direction = UP;
+		else if(movingDownRight)
+			direction = DOWNRIGHT;
+		else if(movingDownLeft)
+			direction = DOWNLEFT;
+		else if(movingUpLeft)
+			direction = UPLEFT;
+		else if(movingUpRight)
+			direction = UPRIGHT;
 		else{
-			animation1 = new Animation(.10f, frames[direction][0]);
-			return;
+			//animation1 = new Animation(.10f, frames[direction][0]);
+			//return;
 		}
-		animation1 = new Animation(.10f, frames[direction]);
+		if(moving)
+			animation1 = new Animation(.10f, frames[0]);
 	}
 		
 	public void updateBullets(){
@@ -157,7 +201,7 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	@Override
 		public boolean keyDown(int keycode) {
 			if(keycode == Keys.SPACE){
-				Pew newPew = new Pew(hero.x, hero.y, 3, 3, 1);
+				Pew newPew = new Pew(hero.x, hero.y, direction, 3);
 				bullets.add(newPew);
 			}
 			return false;
@@ -209,5 +253,33 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	
 	@Override
     public void pause() {
-    }
+    } 
+	
+	public void setAllDirectionsFalse(){
+		movingDown = false;
+		movingDownLeft = false;
+		movingLeft = false;
+		movingUpLeft = false;
+		movingUp = false;
+		movingUpRight = false;
+		movingRight = false;
+		movingDownRight = false;
+	}
+	public static float directionToXVector(int direction){
+		if(direction == DOWNLEFT || direction == LEFT || direction == UPLEFT)
+			return -1;
+		else if(direction == DOWNRIGHT || direction == RIGHT || direction == UPRIGHT)
+			return 1;
+		else
+			return 0;
+	}
+	public static float directionToYVector(int direction){
+		if(direction == DOWNLEFT || direction == DOWN || direction == DOWNRIGHT)
+			return -1;
+		else if(direction == UPLEFT || direction == UP || direction == UPRIGHT)
+			return 1;
+		else
+			return 0;
+	}
+	
 }
