@@ -85,6 +85,26 @@ public class GameEntity {
 			direction = UPRIGHT;
 			animation = new Animation(.10f, upRightFrames);
 		}
+		
+		//Find the frame for each direction to hold it still
+		if(!moving){
+			if(direction == DOWN)
+				animation = new Animation(.10f, downFrames[0]);
+			else if(direction == LEFT)
+				animation = new Animation(.10f, leftFrames[0]);
+			else if(direction == RIGHT)
+				animation = new Animation(.10f, rightFrames[0]);
+			else if(direction == UP)
+				animation = new Animation(.10f, upFrames[0]);
+			else if(direction == DOWNRIGHT)
+				animation = new Animation(.10f, downRightFrames[0]);
+			else if(direction == DOWNLEFT)
+				animation = new Animation(.10f, downLeftFrames[0]);
+			else if(direction == UPLEFT)
+				animation = new Animation(.10f, upLeftFrames[0]);
+			else if(direction == UPRIGHT)
+				animation = new Animation(.10f, upRightFrames[0]);
+		}
 	}
 	
 	public void updatePosition(){

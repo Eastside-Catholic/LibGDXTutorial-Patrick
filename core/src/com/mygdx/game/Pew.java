@@ -13,7 +13,7 @@ public class Pew{
 		this.speed = speed;
 		vectorX = directionToXVector(direction) * speed;
 		vectorY = directionToYVector(direction) * speed;
-		bulletTexture = new Texture("bullet.png");
+		bulletTexture = new Texture("bullet-green-icon.png");
 	}
 	
 	//Returns true if it updates successfully, or returns false if it travels out of bounds of the screen.

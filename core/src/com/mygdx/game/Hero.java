@@ -12,7 +12,7 @@ public class Hero extends GameEntity{
 	public void respondToKeys(){
 		setAllDirectionsFalse();
 		moving = true;
-		if(Gdx.input.isKeyPressed(Input.Keys.A) && Gdx.input.isKeyPressed(Input.Keys.W)){//make method to set them all to nothing, then chnage one of the like you have alreadyf
+		if(Gdx.input.isKeyPressed(Input.Keys.A) && Gdx.input.isKeyPressed(Input.Keys.W)){
 			movingUpLeft = true;
 			return;
 		}else if (Gdx.input.isKeyPressed(Input.Keys.A) && Gdx.input.isKeyPressed(Input.Keys.S)){

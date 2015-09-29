@@ -17,9 +17,6 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	List<Pew> bullets = new ArrayList<Pew>();
 	List<GameEntity> entities = new ArrayList<GameEntity>();
 	
-	
-	
-	
 	@Override
 	public void create () {
 		//Texture spriteSheet1, spriteSheet2, bulletTexture;
@@ -35,8 +32,6 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		entities.add(hero2);//must be in position 2
 		Enemy enemy1 = new Enemy(200, 200, 0, 1, enemy1Sheet);
 		entities.add(enemy1);
-		
-		//Texture bulletTexture = new Texture("bullet.png");
 		
 		Gdx.input.setInputProcessor(this);
 	}
@@ -170,8 +165,8 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
         batch.dispose();
     }
 	
-	 @Override
-	 public void resize(int width, int height) {
+	@Override
+	public void resize(int width, int height) {
 	 }
 	
 	@Override
@@ -181,9 +176,5 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	@Override
     public void pause() {
     } 
-	
-	
-	
-	
-	
+
 }
