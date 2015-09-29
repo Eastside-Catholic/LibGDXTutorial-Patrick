@@ -19,7 +19,6 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	
 	@Override
 	public void create () {
-		//Texture spriteSheet1, spriteSheet2, bulletTexture;
 		Gdx.graphics.setDisplayMode(1067, 600, false);
 		batch = new SpriteBatch();
 		Texture hero1Sheet = new Texture("Hero.jpg");
