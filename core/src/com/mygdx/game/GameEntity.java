@@ -17,13 +17,6 @@ public class GameEntity {
 	TextureRegion currentFrame;	
 	float frameTime = 0;
 	
-	GameEntity(){
-		x = 100;
-		y = 100;
-		direction = 0;
-		speed = 1;
-	}
-	
 	GameEntity(float x, float y, int direction, float speed, Texture spriteSheet1, int health, boolean isPlayer){
 		this.x = x;
 		this.y = y;

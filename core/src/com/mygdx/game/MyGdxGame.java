@@ -12,9 +12,8 @@ import java.util.ArrayList;
 
 public class MyGdxGame extends ApplicationAdapter implements ApplicationListener , InputProcessor {
 	SpriteBatch batch;
-	float delta;
-	public static ArrayList<Pew> bullets = new ArrayList<Pew>();
-	public static ArrayList<GameEntity> entities = new ArrayList<GameEntity>();
+	public static List<Pew> bullets = new ArrayList<Pew>();
+	public static List<GameEntity> entities = new ArrayList<GameEntity>();
 	
 	@Override
 	public void create (){
@@ -26,17 +25,22 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		
 		Hero hero = new Hero(100, 100, 0, 1, hero1Sheet, 15, true);
 		entities.add(hero);//must be in position1
-		Hero2 hero2 = new Hero2(150, 100, 0, 1, hero2Sheet, 15, true);
+		Hero2 hero2 = new Hero2(150, 100, 0, 1, hero2Sheet, 1, true);
 		entities.add(hero2);//must be in position 2
-		Enemy enemy1 = new Enemy(200, 200, 0, 1, enemy1Sheet, 1, false);
-		entities.add(enemy1);
+		int randX, randY;
+		for(int x = 0; x < 15; x++){
+			randX =(int)(Math.random() * Gdx.graphics.getWidth());
+			randY =(int)(Math.random() * Gdx.graphics.getHeight());
+			Enemy enemy1 = new Enemy(randX, randY, 0, 1, enemy1Sheet, 1, false);
+			entities.add(enemy1);
+		}
 		
 		Gdx.input.setInputProcessor(this);
 	}
 
 	@Override
 	public void render() {
-		Gdx.gl.glClearColor(0.9f, 0.6f, 0.1f, 1);
+		Gdx.gl.glClearColor(0.5f, 0.9f, 0.3f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		checkKeysPressed(); //Have each entity respond to any keys
 		setDirection();		//Have each entity set its new direction, if applicable
@@ -45,7 +49,6 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		checkCollision();
 		batch.begin();
 		drawEntitiesAndBullets();//Draw all the things to the screen
-		System.out.println("Entity size: " + entities.size() +"/nBullets size: " + bullets.size());
 		batch.end();
 	}
 	
@@ -85,12 +88,9 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 			bulletCounter = 0;
 			for(Pew bullet: bullets){
 				if(bullet.rect.overlaps(ge.rect)){
-					System.out.println("collision with entity: " + entityCounter);
-					if(!bullet.hurtPlayers && !ge.isPlayer){
-						System.out.println("Entity " + entityCounter + " being injured.");
+					if((!bullet.hurtPlayers && !ge.isPlayer) || (bullet.hurtPlayers && ge.isPlayer)){
 						ge.health -= bullet.damage;  
 						if(ge.health <= 0){
-							System.out.println("Death of an entity. Index of entity: " + entityCounter);
 							entitiesToRemove.add(entityCounter);
 						}
 						bulletsToRemove.add(bulletCounter);//make sure to delete the bullet if it hits something
