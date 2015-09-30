@@ -115,32 +115,32 @@ public class GameEntity {
 	
 	public void updatePosition(){
 		if(movingDown){
-			y -= speed;
+			attemptYCoordChange(-speed);
 		}
 		if(movingDownLeft){		
-			y -= speed;
-			x -= speed;
+			attemptYCoordChange(-speed);
+			attemptXCoordChange(-speed);
 		}			
 		if(movingLeft){
-			x -= speed;
+			attemptXCoordChange(-speed);
 		}
 		if(movingUpLeft){
-			y += speed;
-			x -= speed;
+			attemptYCoordChange(speed);
+			attemptXCoordChange(-speed);
 		}
 		if(movingUp){
-			y += speed;
+			attemptYCoordChange(speed);
 		}
 		if(movingUpRight){
-			y += speed;
-			x += speed;
+			attemptYCoordChange(speed);
+			attemptXCoordChange(speed);
 		}
 		if(movingRight){
-			x += speed;
+			attemptXCoordChange(speed);
 		}
 		if(movingDownRight){
-			x += speed;
-			y -= speed;
+			attemptXCoordChange(speed);
+			attemptYCoordChange(-speed);
 		}
 		rect.setPosition(x, y);
 	}
@@ -153,6 +153,18 @@ public class GameEntity {
 		frameTime += Gdx.graphics.getDeltaTime();
 		currentFrame = animation.getKeyFrame(frameTime, true);
 		return currentFrame;
+	}
+	
+	public void attemptYCoordChange(float y){
+		float projectedY = this.y + y;
+		if(projectedY >= 0 && projectedY <= Gdx.graphics.getHeight())
+			this.y = projectedY;
+	}
+	
+	public void attemptXCoordChange(float x){
+		float projectedX = this.x + x;
+		if(projectedX >= 0 && projectedX <= Gdx.graphics.getWidth())
+			this.x = projectedX;
 	}
 	
 	public void setAllDirectionsFalse(){

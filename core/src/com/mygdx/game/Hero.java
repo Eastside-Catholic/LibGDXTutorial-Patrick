@@ -11,6 +11,7 @@ public class Hero extends GameEntity{
 		super(x, y, direction, speed, spriteSheet1, health, isPlayer);
 	}
 	
+	@Override
 	public void respondToKeys(){
 		timeSummary += Gdx.graphics.getDeltaTime();
 		if(Gdx.input.isKeyPressed(Input.Keys.SPACE) && timeSummary > 0.3){
@@ -48,6 +49,7 @@ public class Hero extends GameEntity{
 		return;
 	}
 	
+	@Override
 	public void makeBullet(){
 		Pew newPew = new Pew(x, y, direction, 3, new Texture("bullet-orange-icon.png"), 1, false);
 		MyGdxGame.bullets.add(newPew);

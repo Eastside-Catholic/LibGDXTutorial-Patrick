@@ -8,7 +8,7 @@ public class Enemy extends GameEntity{
 		super(x, y, direction, speed, spriteSheet1, health, isPlayer);
 	}
 	
-	//override
+	@Override
 	public void respondToKeys(){
 		
 	}
