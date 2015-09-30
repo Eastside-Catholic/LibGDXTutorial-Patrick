@@ -1,7 +1,5 @@
 package com.mygdx.game;
 
-import java.util.ArrayList;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
@@ -13,46 +11,46 @@ public class Hero extends GameEntity{
 		super(x, y, direction, speed, spriteSheet1, health, isPlayer);
 	}
 	
-	public ArrayList respondToKeys(ArrayList tempBulletsArray){
+	public void respondToKeys(){
 		timeSummary += Gdx.graphics.getDeltaTime();
 		if(Gdx.input.isKeyPressed(Input.Keys.SPACE) && timeSummary > 0.3){
-			tempBulletsArray = makeBullet(tempBulletsArray);
+			makeBullet();
 			timeSummary = 0;
 		}
 		setAllDirectionsFalse();
 		moving = true;
 		if(Gdx.input.isKeyPressed(Input.Keys.A) && Gdx.input.isKeyPressed(Input.Keys.W)){
 			movingUpLeft = true;
-			return tempBulletsArray;
+			return;
 		}else if (Gdx.input.isKeyPressed(Input.Keys.A) && Gdx.input.isKeyPressed(Input.Keys.S)){
 			movingDownLeft = true;
-			return tempBulletsArray;
+			return;
 		}else if(Gdx.input.isKeyPressed(Input.Keys.A)){
 			movingLeft = true;	
-			return tempBulletsArray;
+			return;
 		}else if(Gdx.input.isKeyPressed(Input.Keys.D) && Gdx.input.isKeyPressed(Input.Keys.W)){
 			movingUpRight = true;
-			return tempBulletsArray;
+			return;
 		}else if (Gdx.input.isKeyPressed(Input.Keys.D) && Gdx.input.isKeyPressed(Input.Keys.S)){
 			movingDownRight = true;
-			return tempBulletsArray;
+			return;
 		}else if(Gdx.input.isKeyPressed(Input.Keys.D)){
 			movingRight = true;
-			return tempBulletsArray;
+			return;
 		}else if(Gdx.input.isKeyPressed(Input.Keys.W)){
 			movingUp = true;
-			return tempBulletsArray;
+			return;
 		}else if(Gdx.input.isKeyPressed(Input.Keys.S)){
 			movingDown = true;
-			return tempBulletsArray;
+			return;
 		}
 		moving = false;
-		return tempBulletsArray;
+		return;
 	}
 	
-	public ArrayList makeBullet(ArrayList tempBulletsArray){
+	public void makeBullet(){
 		Pew newPew = new Pew(x, y, direction, 3, new Texture("bullet-orange-icon.png"), 1, false);
-		tempBulletsArray.add(newPew);
-		return tempBulletsArray;
+		MyGdxGame.bullets.add(newPew);
+		return;
 	}
 }

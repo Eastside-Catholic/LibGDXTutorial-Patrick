@@ -13,8 +13,8 @@ import java.util.ArrayList;
 public class MyGdxGame extends ApplicationAdapter implements ApplicationListener , InputProcessor {
 	SpriteBatch batch;
 	float delta;
-	public ArrayList<Pew> bullets = new ArrayList<Pew>();
-	public ArrayList<GameEntity> entities = new ArrayList<GameEntity>();
+	public static ArrayList<Pew> bullets = new ArrayList<Pew>();
+	public static ArrayList<GameEntity> entities = new ArrayList<GameEntity>();
 	
 	@Override
 	public void create (){
@@ -51,7 +51,7 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	
 	public void checkKeysPressed(){
 		for(GameEntity e: entities){
-			bullets = e.respondToKeys(bullets);
+			e.respondToKeys();
 		}
 	}
 	

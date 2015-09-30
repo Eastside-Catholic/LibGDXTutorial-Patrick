@@ -1,7 +1,5 @@
 package com.mygdx.game;
 
-import java.util.ArrayList;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -63,9 +61,8 @@ public class GameEntity {
 		animation = new Animation(.10f, downFrames);
 	}
 	
-	public ArrayList respondToKeys(ArrayList bullets){
-		//Make sure to put this in the other classes!
-		return bullets;
+	public void respondToKeys(){
+		//Make sure to put this in the other classes
 	}
 	
 	public void updateDirection(){
