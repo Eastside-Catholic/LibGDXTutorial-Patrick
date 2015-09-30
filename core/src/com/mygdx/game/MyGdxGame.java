@@ -82,6 +82,7 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		List<Integer> entitiesToRemove = new ArrayList<Integer>();
 		List<Integer> bulletsToRemove = new ArrayList<Integer>();
 		for(GameEntity ge: entities){
+			bulletCounter = 0;
 			for(Pew bullet: bullets){
 				if(bullet.rect.overlaps(ge.rect)){
 					System.out.println("collision with entity: " + entityCounter);
@@ -101,10 +102,10 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		}
 		
 		for(int x = bulletsToRemove.size() - 1; x >= 0; x--){
-			bullets.remove(bulletsToRemove.get(x));
+			bullets.remove(bulletsToRemove.get(x).intValue());
 		}
 		for(int x = entitiesToRemove.size() - 1; x >= 0; x--){
-			entities.remove(entitiesToRemove.get(x));
+			entities.remove(entitiesToRemove.get(x).intValue());
 		}
 	}
 		
@@ -120,7 +121,7 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		}
 		//Cycles through and removes them from the list from the top down
 		for(int x = bulletsToDestroy.size() - 1; x >= 0; x--)
-			bullets.remove(bulletsToDestroy.get(x));
+			bullets.remove(bulletsToDestroy.get(x).intValue());
 	}
 
 	public boolean areCoordsInWindow(float x, float y){
