@@ -1,15 +1,20 @@
 package com.mygdx.game;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 
 public class GameEntity {
+	public Rectangle rect;
 	public float x, y, speed;
-	public int direction;
+	public int direction, health;
 	public Animation animation;
 	boolean moving, movingDown, movingDownLeft, movingLeft, movingUpLeft, movingUp, movingUpRight, movingRight, movingDownRight;
+	boolean isPlayer;
 	final static int DOWN = 0, DOWNLEFT = 1, LEFT = 2, UPLEFT = 3, UP = 4, UPRIGHT = 5, RIGHT = 6, DOWNRIGHT = 7;
 	TextureRegion currentFrame;	
 	float frameTime = 0;
@@ -21,11 +26,14 @@ public class GameEntity {
 		speed = 1;
 	}
 	
-	GameEntity(float x, float y, int direction, float speed, Texture spriteSheet1){
+	GameEntity(float x, float y, int direction, float speed, Texture spriteSheet1, int health, boolean isPlayer){
 		this.x = x;
 		this.y = y;
 		this.direction = direction;
 		this.speed = speed;
+		this.health = health;
+		this.isPlayer = isPlayer;
+		rect = new Rectangle(x, y, 32, 32);
 		
 		downFrames[0] = new TextureRegion(spriteSheet1, 0, 0, 32, 32);
 		downFrames[1] = new TextureRegion(spriteSheet1, 32, 0, 32, 32);
@@ -55,8 +63,9 @@ public class GameEntity {
 		animation = new Animation(.10f, downFrames);
 	}
 	
-	public void respondToKeys(){
+	public ArrayList respondToKeys(ArrayList bullets){
 		//Make sure to put this in the other classes!
+		return bullets;
 	}
 	
 	public void updateDirection(){
@@ -108,30 +117,39 @@ public class GameEntity {
 	}
 	
 	public void updatePosition(){
-		if(movingDown)
+		if(movingDown){
 			y -= speed;
+		}
 		if(movingDownLeft){		
 			y -= speed;
 			x -= speed;
 		}			
-		if(movingLeft)
+		if(movingLeft){
 			x -= speed;
+		}
 		if(movingUpLeft){
 			y += speed;
 			x -= speed;
 		}
-		if(movingUp)
+		if(movingUp){
 			y += speed;
+		}
 		if(movingUpRight){
 			y += speed;
 			x += speed;
 		}
-		if(movingRight)
+		if(movingRight){
 			x += speed;
+		}
 		if(movingDownRight){
 			x += speed;
 			y -= speed;
 		}
+		rect.setPosition(x, y);
+	}
+	
+	public void makeBullet(){
+		//Be sure to fill this out if you want the entity to make the bullets!
 	}
 	
 	public TextureRegion getCurrentFrame(){
