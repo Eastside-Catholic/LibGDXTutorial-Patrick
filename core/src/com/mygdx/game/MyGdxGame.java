@@ -12,8 +12,11 @@ import java.util.ArrayList;
 
 public class MyGdxGame extends ApplicationAdapter implements ApplicationListener , InputProcessor {
 	SpriteBatch batch;
+	public static boolean allPlayersKilled;
+	private float timeSummary = 0;
 	public static List<Pew> bullets = new ArrayList<Pew>();
 	public static List<GameEntity> entities = new ArrayList<GameEntity>();
+	public float r = 0.5f, g = 0.9f, b = 0.3f;
 	
 	@Override
 	public void create (){
@@ -23,14 +26,15 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		Texture hero2Sheet = new Texture("Hero2.png");
 		Texture enemy1Sheet = new Texture("Enemy1.jpg");
 		
-		Hero hero = new Hero(100, 100, 0, 1, hero1Sheet, 15, true);
+		Hero hero = new Hero(100, 100, 0, 2, hero1Sheet, 5, true);
 		entities.add(hero);//must be in position1
-		Hero2 hero2 = new Hero2(150, 100, 0, 1, hero2Sheet, 1, true);
+		Hero2 hero2 = new Hero2(150, 100, 0, 2  , hero2Sheet, 5, true);
 		entities.add(hero2);//must be in position 2
+		allPlayersKilled = false;
 		int randX, randY;
 		for(int x = 0; x < 15; x++){
-			randX =(int)(Math.random() * Gdx.graphics.getWidth());
-			randY =(int)(Math.random() * Gdx.graphics.getHeight());
+			randX =(int)(Math.random() * (Gdx.graphics.getWidth() - 32));
+			randY =(int)(Math.random() * (Gdx.graphics.getHeight() - 32));
 			Enemy enemy1 = new Enemy(randX, randY, 0, 1, enemy1Sheet, 1, false);
 			entities.add(enemy1);
 		}
@@ -40,7 +44,7 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 
 	@Override
 	public void render() {
-		Gdx.gl.glClearColor(0.5f, 0.9f, 0.3f, 1);
+		Gdx.gl.glClearColor(r, g, b, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		checkKeysPressed(); //Have each entity respond to any keys
 		setDirection();		//Have each entity set its new direction, if applicable
@@ -49,7 +53,17 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		checkCollision();
 		batch.begin();
 		drawEntitiesAndBullets();//Draw all the things to the screen
+		if(allPlayersKilled){
+			r= .9f;
+			g= 0f;
+			b= 0f;
+		}
+			
 		batch.end();
+	}
+	
+	public void reset(){
+		
 	}
 	
 	public void checkKeysPressed(){
@@ -65,6 +79,11 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		for(Pew tempPew: bullets){
 			batch.draw(tempPew.bulletTexture, tempPew.x, tempPew.y);  
 		}
+	}
+	
+	public void DeathActions(){
+		Gdx.gl.glClearColor(.9f, .0f, .0f, 1);
+		batch.draw(new Texture("hero.jpg"), 500, 500);
 	}
 	
 	public void calculatePosition(){
@@ -102,7 +121,11 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		}
 		
 		for(int x = bulletsToRemove.size() - 1; x >= 0; x--){
+			try{
 			bullets.remove(bulletsToRemove.get(x).intValue());
+			}catch(Exception e){
+				System.out.println("Prevented an error in removing bullets");
+			}
 		}
 		for(int x = entitiesToRemove.size() - 1; x >= 0; x--){
 			entities.remove(entitiesToRemove.get(x).intValue());

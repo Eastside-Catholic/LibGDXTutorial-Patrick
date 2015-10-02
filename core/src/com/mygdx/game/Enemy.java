@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 public class Enemy extends GameEntity{
 	boolean isPlayer = false;
 	float timeSummary;
+	final static float POINTFOURONE = (float) 0.41421, TWOPOINTFOUR = (float)2.414; 
 	Enemy(float x, float y, int direction, float speed, Texture spriteSheet1, int health, boolean isPlayer){
 		super(x, y, direction, speed, spriteSheet1, health, isPlayer);
 	}
@@ -17,28 +18,32 @@ public class Enemy extends GameEntity{
 			makeBullet();
 			timeSummary = 0;
 		}
+		setAllDirectionsFalse();
 		int i = 0;
 		float x1 = -1, x2 = -1, y1 = -1, y2 = -1;//set to impossible values
 		float targetXCoord = 0, targetYCoord = 0;
 		boolean player1Exists = false, player2Exists = false;
 		for(GameEntity e :MyGdxGame.entities){
 			if(e.isPlayer){
-				if(x==0){
+				if(i==0){
 					x1 = e.x;
 					y1 = e.y;
 					player1Exists = true;
+					//System.out.println("Player 1 found");
 				}
-				if(x==1){
+				if(i==1){
 					x2 = e.x;
 					y2 = e.y;
 					player2Exists = true;
+					//System.out.println("Player 2 found");
 				}
 				i++;
 			}
 		}
 		if(!player1Exists && !player2Exists){
 			targetXCoord = x;
-			targetYCoord = y + 1;
+			targetYCoord = y - 1;
+			MyGdxGame.allPlayersKilled = true;
 		}
 		if(player1Exists && !player2Exists){
 			targetXCoord = x1;
@@ -55,10 +60,36 @@ public class Enemy extends GameEntity{
 				targetYCoord = y1;
 			}
 		}
-		float diffX = targetXCoord - x;
-		float diffY = targetYCoord - y;
+		float diffX = targetXCoord - x;//0
+		float diffY = targetYCoord - y;//1
+		float slope = diffY/diffX;		
+
 		
-		
+		//find the 8-way direction closest to the bullet.
+		if(slope < TWOPOINTFOUR && slope > POINTFOURONE && diffY < 0){
+			movingDownLeft = true;
+		}
+		else if(slope > -TWOPOINTFOUR && slope < -POINTFOURONE && diffY > 0){
+			movingUpLeft = true;
+		}
+		else if(slope > -TWOPOINTFOUR && slope < -POINTFOURONE && diffY < 0){
+			movingDownRight = true;
+		}
+		else if(slope < POINTFOURONE && slope > -POINTFOURONE && diffX > 0){
+			movingRight = true;
+		}
+		else if(slope > -POINTFOURONE && slope < POINTFOURONE && diffX < 0){
+			movingLeft = true;
+		}
+		else if(slope < TWOPOINTFOUR && slope > POINTFOURONE && diffY > 0){
+			movingUpRight = true;
+		}
+		else if((slope < -TWOPOINTFOUR || slope > TWOPOINTFOUR) && diffY > 0){
+			movingUp =  true;
+		}
+		else if((slope > TWOPOINTFOUR || slope < -TWOPOINTFOUR) && diffY < 0){
+			movingDown = true;
+		}
 	}
 	
 	public void makeBullet(){
