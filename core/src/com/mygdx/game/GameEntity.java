@@ -150,14 +150,16 @@ public class GameEntity {
 	
 	public void attemptYCoordChange(float y){
 		float projectedY = this.y + y;
-		if(projectedY >= 0 && projectedY <= Gdx.graphics.getHeight() - 32)
+		if(projectedY >= 0 && projectedY <= Gdx.graphics.getHeight() - 32){
 			this.y = projectedY;
+		}
 	}
 	
 	public void attemptXCoordChange(float x){
 		float projectedX = this.x + x;
-		if(projectedX >= 0 && projectedX <= Gdx.graphics.getWidth() -32)
+		if(projectedX >= 0 && projectedX <= Gdx.graphics.getWidth() -32){
 			this.x = projectedX;
+		}
 	}
 	
 	public void setAllDirectionsFalse(){

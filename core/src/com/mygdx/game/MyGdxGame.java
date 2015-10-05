@@ -3,43 +3,35 @@ package com.mygdx.game;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import java.util.List;
 import java.util.ArrayList;
 
-public class MyGdxGame extends ApplicationAdapter implements ApplicationListener , InputProcessor {
+public class MyGdxGame extends ApplicationAdapter implements ApplicationListener{
 	SpriteBatch batch;
 	public static boolean allPlayersKilled;
-	private float timeSummary = 0;
 	public static List<Pew> bullets = new ArrayList<Pew>();
 	public static List<GameEntity> entities = new ArrayList<GameEntity>();
 	public float r = 0.5f, g = 0.9f, b = 0.3f;
+	private BitmapFont font;
+	Texture hero1Sheet, hero2Sheet, enemy1Sheet;
+	
 	
 	@Override
 	public void create (){
+		font = new BitmapFont();
+		font.setColor(Color.ORANGE);
+		//font.sc
 		Gdx.graphics.setDisplayMode(1067, 600, false);
 		batch = new SpriteBatch();
-		Texture hero1Sheet = new Texture("Hero.jpg");
-		Texture hero2Sheet = new Texture("Hero2.png");
-		Texture enemy1Sheet = new Texture("Enemy1.jpg");
-		
-		Hero hero = new Hero(100, 100, 0, 2, hero1Sheet, 5, true);
-		entities.add(hero);//must be in position1
-		Hero2 hero2 = new Hero2(150, 100, 0, 2  , hero2Sheet, 5, true);
-		entities.add(hero2);//must be in position 2
-		allPlayersKilled = false;
-		int randX, randY;
-		for(int x = 0; x < 15; x++){
-			randX =(int)(Math.random() * (Gdx.graphics.getWidth() - 32));
-			randY =(int)(Math.random() * (Gdx.graphics.getHeight() - 32));
-			Enemy enemy1 = new Enemy(randX, randY, 0, 1, enemy1Sheet, 1, false);
-			entities.add(enemy1);
-		}
-		
-		Gdx.input.setInputProcessor(this);
+		hero1Sheet = new Texture("Hero.jpg");
+		hero2Sheet = new Texture("Hero2.png");
+		enemy1Sheet = new Texture("Enemy1.jpg");
+		resetWorld();
 	}
 
 	@Override
@@ -54,16 +46,27 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		batch.begin();
 		drawEntitiesAndBullets();//Draw all the things to the screen
 		if(allPlayersKilled){
-			r= .9f;
-			g= 0f;
-			b= 0f;
+			font.draw(batch, "YOU DIED", 450, 275);
+			r = .9f;
+			g = 0f;
+			b = 0f;
 		}
-			
 		batch.end();
 	}
 	
-	public void reset(){
-		
+	public void resetWorld(){
+		Hero hero = new Hero(100, 100, 0, 2, hero1Sheet, 5, true);
+		entities.add(hero);//must be in position1
+		Hero2 hero2 = new Hero2(150, 100, 0, 2  , hero2Sheet, 5, true);
+		entities.add(hero2);//must be in position 2
+		allPlayersKilled = false;
+		int randX, randY;
+		for(int x = 0; x < 15; x++){
+			randX =(int)(Math.random() * (Gdx.graphics.getWidth() - 32));
+			randY =(int)(Math.random() * (Gdx.graphics.getHeight() - 32));
+			Enemy enemy1 = new Enemy(randX, randY, 0, 1, enemy1Sheet, 1, false);
+			entities.add(enemy1);
+		}
 	}
 	
 	public void checkKeysPressed(){
@@ -112,7 +115,7 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 						if(ge.health <= 0){
 							entitiesToRemove.add(entityCounter);
 						}
-						bulletsToRemove.add(bulletCounter);//make sure to delete the bullet if it hits something
+						bulletsToRemove.add(bulletCounter);
 					}
 				}
 				bulletCounter++;
@@ -154,64 +157,4 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 			return true;
 	}
 	
-	@Override
-	public boolean keyUp(int keycode) {
-		return false;
-	}
-
-	@Override
-	public boolean keyTyped(char character) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	
-	@Override
-	public boolean keyDown(int keycode) {
-		return false;
-	}
-	@Override
-	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		return true;
-	}
-
-	@Override
-	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        // TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		return true;
-	}
-
-	@Override
-	public boolean mouseMoved(int screenX, int screenY) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean scrolled(int amount) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	
-	@Override
-    public void dispose() {
-        batch.dispose();
-    }
-	
-	@Override
-	public void resize(int width, int height) {
-	 }
-	
-	@Override
-    public void resume() {
-    }
-	
-	@Override
-    public void pause() {
-    } 
-
 }
