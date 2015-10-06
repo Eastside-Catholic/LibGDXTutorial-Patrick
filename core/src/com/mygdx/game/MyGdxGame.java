@@ -77,10 +77,10 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		allPlayersKilled = false;
 		i =  0;
 		int randX, randY;
-		for(int x = 0; x < 15; x++){
+		for(int x = 0; x < 2; x++){
 			randX =(int)(Math.random() * (Gdx.graphics.getWidth() - 32));
 			randY =(int)(Math.random() * (Gdx.graphics.getHeight() - 32));
-			Enemy enemy1 = new Enemy(randX, randY, 0, 1, enemy1Sheet, 1, false);
+			Enemy enemy1 = new Enemy(randX, randY, 0, 1, enemy1Sheet, 23, false);
 			entities.add(enemy1);
 		}
 	}
@@ -94,13 +94,14 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	public void drawEntitiesAndBullets(){
 		for(GameEntity e: entities){
 			batch.draw(e.getCurrentFrame(), e.x, e.y);
-			float healthPercent = e.health/e.maxHealth;
+			float healthPercent = ((float)e.health/(float)e.maxHealth);
 			Texture useTexture = allHealth;//by default
+			//System.out.println("Percent: " + healthPercent + "entity health percent: " + (e.health/e.maxHealth));
 			if(healthPercent <= .35){
 				useTexture = lowHealth;
-			} else if (healthPercent <= .65){
+			}else if (healthPercent <= .65){
 				useTexture = medHealth;
-			} else if (healthPercent < .90){
+			}else if (healthPercent <= .90){
 				useTexture = mostHealth;
 			}
 			//rect = new TextureRegion(useTexture, useTexture.getWidth(), useTexture.getHeight(), 1, 1);
