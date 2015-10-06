@@ -3,6 +3,7 @@ package com.mygdx.game;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -25,7 +26,6 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	public void create (){
 		font = new BitmapFont();
 		font.setColor(Color.ORANGE);
-		//font.sc
 		Gdx.graphics.setDisplayMode(1067, 600, false);
 		batch = new SpriteBatch();
 		hero1Sheet = new Texture("Hero.jpg");
@@ -38,11 +38,13 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	public void render() {
 		Gdx.gl.glClearColor(r, g, b, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		checkKeysPressed(); //Have each entity respond to any keys
-		setDirection();		//Have each entity set its new direction, if applicable
-		calculatePosition();//Have each entity update its position based on its new direction
-		updateBullets();	//Have each bullet update its position based on its vector
-		checkCollision();
+		if(!Gdx.input.isKeyPressed(Input.Keys.P)){
+			checkKeysPressed(); //Have each entity respond to any keys
+			setDirection();		//Have each entity set its new direction, if applicable
+			calculatePosition();//Have each entity update its position based on its new direction
+			updateBullets();	//Have each bullet update its position based on its vector
+			checkCollision();
+		}
 		batch.begin();
 		drawEntitiesAndBullets();//Draw all the things to the screen
 		if(allPlayersKilled){
