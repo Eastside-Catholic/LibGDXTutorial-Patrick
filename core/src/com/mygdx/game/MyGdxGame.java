@@ -9,17 +9,21 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+
 import java.util.List;
 import java.util.ArrayList;
 
 public class MyGdxGame extends ApplicationAdapter implements ApplicationListener{
-	SpriteBatch batch;
+	static SpriteBatch batch;
 	public static boolean allPlayersKilled;
 	public static List<Pew> bullets = new ArrayList<Pew>();
 	public static List<GameEntity> entities = new ArrayList<GameEntity>();
 	public float r = 0.5f, g = 0.9f, b = 0.3f;
+	private int i = 0;
 	private BitmapFont font;
-	Texture hero1Sheet, hero2Sheet, enemy1Sheet;
+	Texture hero1Sheet, hero2Sheet, enemy1Sheet, lowHealth, medHealth, mostHealth, allHealth;
+	TextureRegion rect;
 	
 	
 	@Override
@@ -31,6 +35,10 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		hero1Sheet = new Texture("Hero.jpg");
 		hero2Sheet = new Texture("Hero2.png");
 		enemy1Sheet = new Texture("Enemy1.jpg");
+		lowHealth = new Texture("lowHealth.png");
+		medHealth = new Texture("someHealth.png");
+		mostHealth = new Texture("mostHealth.png");
+		allHealth = new Texture("allHealth.png");
 		resetWorld();
 	}
 
@@ -48,20 +56,26 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		batch.begin();
 		drawEntitiesAndBullets();//Draw all the things to the screen
 		if(allPlayersKilled){
+			i++;
 			font.draw(batch, "YOU DIED", 450, 275);
 			r = .9f;
 			g = 0f;
 			b = 0f;
+			if(i == 200){
+				resetWorld();
+			}
 		}
 		batch.end();
 	}
 	
 	public void resetWorld(){
-		Hero hero = new Hero(100, 100, 0, 2, hero1Sheet, 5, true);
-		entities.add(hero);//must be in position1
-		Hero2 hero2 = new Hero2(150, 100, 0, 2  , hero2Sheet, 5, true);
-		entities.add(hero2);//must be in position 2
+		entities.clear();
+		Hero hero = new Hero(100, 100, 0, 2, hero1Sheet, 10, true);
+		entities.add(hero);
+		Hero2 hero2 = new Hero2(150, 100, 0, 2  , hero2Sheet, 10, true);
+		entities.add(hero2);
 		allPlayersKilled = false;
+		i =  0;
 		int randX, randY;
 		for(int x = 0; x < 15; x++){
 			randX =(int)(Math.random() * (Gdx.graphics.getWidth() - 32));
@@ -80,6 +94,18 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	public void drawEntitiesAndBullets(){
 		for(GameEntity e: entities){
 			batch.draw(e.getCurrentFrame(), e.x, e.y);
+			float healthPercent = e.health/e.maxHealth;
+			Texture useTexture = allHealth;//by default
+			if(healthPercent <= .35){
+				useTexture = lowHealth;
+			} else if (healthPercent <= .65){
+				useTexture = medHealth;
+			} else if (healthPercent < .90){
+				useTexture = mostHealth;
+			}
+			//rect = new TextureRegion(useTexture, useTexture.getWidth(), useTexture.getHeight(), 1, 1);
+			batch.draw(useTexture, e.x+8, e.y+32, 16, 6);
+			//batch.draw(rect, e.x+32, e.y+16, 16, 16);
 		}
 		for(Pew tempPew: bullets){
 			batch.draw(tempPew.bulletTexture, tempPew.x, tempPew.y);  

@@ -9,7 +9,7 @@ import com.badlogic.gdx.math.Rectangle;
 public class GameEntity {
 	public Rectangle rect;
 	public float x, y, speed;
-	public int direction, health;
+	public int direction, health, maxHealth;
 	public Animation animation;
 	boolean moving, movingDown, movingDownLeft, movingLeft, movingUpLeft, movingUp, movingUpRight, movingRight, movingDownRight;
 	boolean isPlayer;
@@ -24,6 +24,7 @@ public class GameEntity {
 		this.speed = speed;
 		this.health = health;
 		this.isPlayer = isPlayer;
+		maxHealth = health;
 		rect = new Rectangle(x, y, 32, 32);
 		
 		downFrames[0] = new TextureRegion(spriteSheet1, 0, 0, 32, 32);
