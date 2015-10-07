@@ -23,19 +23,19 @@ public class Enemy extends GameEntity{
 		float x1 = -1, x2 = -1, y1 = -1, y2 = -1;//set to impossible values
 		float targetXCoord = 0, targetYCoord = 0;
 		boolean player1Exists = false, player2Exists = false;
-		for(GameEntity e :MyGdxGame.entities){
-			if(e.isPlayer){
+		for(GameEntity e: MyGdxGame.entities){
+			if(e.isPlayer && !e.dead){
 				if(i==0){
 					x1 = e.x;
 					y1 = e.y;
 					player1Exists = true;
-					//System.out.println("Player 1 found");
+					//System.out.println("1 player found");
 				}
 				if(i==1){
 					x2 = e.x;
 					y2 = e.y;
 					player2Exists = true;
-					//System.out.println("Player 2 found");
+					//System.out.println("2 player found");
 				}
 				i++;
 			}

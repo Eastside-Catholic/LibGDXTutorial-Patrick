@@ -22,6 +22,7 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	public float r = 0.5f, g = 0.9f, b = 0.3f;
 	private int i = 0;
 	private BitmapFont font;
+	PowerUp pwrup;
 	Texture hero1Sheet, hero2Sheet, enemy1Sheet, lowHealth, medHealth, mostHealth, allHealth;
 	TextureRegion rect;
 	
@@ -43,7 +44,7 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	}
 
 	@Override
-	public void render() {
+	public void render() {	
 		Gdx.gl.glClearColor(r, g, b, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		if(!Gdx.input.isKeyPressed(Input.Keys.P)){
@@ -52,6 +53,7 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 			calculatePosition();//Have each entity update its position based on its new direction
 			updateBullets();	//Have each bullet update its position based on its vector
 			checkCollision();
+			randomGeneration();
 		}
 		batch.begin();
 		drawGameElements();//Draw all the things to the screen
@@ -59,16 +61,17 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 			i++;
 			font.draw(batch, "YOU DIED", 450, 275);
 			r = .9f; g = 0f; b = 0f;
-			if(i == 200){
+			if(i == 200)
 				resetWorld();
-			}
 		}
 		batch.end();
 	}
 	
 	public void resetWorld(){
-		//Entity constructor is x, y, direction number, speed, sprite sheet, health, isPlayer
 		entities.clear();
+		bullets.clear();
+		powerUps.clear();
+		//Entity constructor is x, y, direction number, speed, sprite sheet, health, isPlayer
 		Hero hero = new Hero(100, 100, 0, 1, hero1Sheet, 10, true);
 		entities.add(hero);
 		Hero2 hero2 = new Hero2(150, 100, 0, 1, hero2Sheet, 10, true);
@@ -86,10 +89,21 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		}
 	}
 	
-	public void checkKeysPressed(){
-		for(GameEntity e: entities){
-			e.respondToKeys();
+	public void randomGeneration(){
+		int randInt = (int)(300 * Math.random());
+		if(randInt == 150){
+			randInt = (int)(4*Math.random());
+			int randX = (int)((Gdx.graphics.getWidth()-32) * Math.random());
+			int randY = (int)((Gdx.graphics.getHeight()-32)* Math.random());
+			pwrup= new PowerUp(randInt, randX, randY);
+			powerUps.add(pwrup);
+			System.out.println("printed");
 		}
+	}
+	
+	public void checkKeysPressed(){
+		for(GameEntity e: entities)
+			e.respondToKeys();
 	}
 	
 	public void drawGameElements(){
@@ -98,22 +112,20 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 			float healthPercent = ((float)e.health/(float)e.maxHealth);
 			Texture useTexture = allHealth;//by default
 			//System.out.println("Percent: " + healthPercent + "entity health percent: " + (e.health/e.maxHealth));
-			if(healthPercent <= .35){
+			if(healthPercent <= .35)
 				useTexture = lowHealth;
-			}else if (healthPercent <= .65){
+			else if (healthPercent <= .65)
 				useTexture = medHealth;
-			}else if (healthPercent <= .90){
+			else if (healthPercent <= .90)
 				useTexture = mostHealth;
-			}
-			//rect = new TextureRegion(useTexture, useTexture.getWidth(), useTexture.getHeight(), 1, 1);
+			
 			batch.draw(useTexture, e.x+8, e.y-5, 16, 6);
-			//batch.draw(rect, e.x+32, e.y+16, 16, 16);
 		}
 		for(Pew tempPew: bullets){
 			batch.draw(tempPew.bulletTexture, tempPew.x, tempPew.y);  
 		}
 		for(PowerUp p: powerUps){
-			batch.draw(p.texture, p.x, p.y);
+			batch.draw(p.texture, p.x, p.y, 32, 32);
 		}
 	}
 	
@@ -132,6 +144,7 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	public void checkCollision(){
 		int entityCounter = 0;
 		int bulletCounter = 0;
+		int powerUpCounter = 0;
 		List<Integer> entitiesToRemove = new ArrayList<Integer>();
 		List<Integer> bulletsToRemove = new ArrayList<Integer>();
 		for(GameEntity ge: entities){
@@ -141,12 +154,31 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 					if((!bullet.hurtPlayers && !ge.isPlayer) || (bullet.hurtPlayers && ge.isPlayer)){
 						ge.health -= bullet.damage;  
 						if(ge.health <= 0){
-							entitiesToRemove.add(entityCounter);
+							if(ge.isPlayer)
+								ge.dead = true;
+							else
+								entitiesToRemove.add(entityCounter);
 						}
 						bulletsToRemove.add(bulletCounter);
 					}
 				}
 				bulletCounter++;
+			}
+			for(PowerUp p: powerUps){
+				if(p.rect.overlaps(ge.rect)){
+					if(ge.isPlayer){
+						if(p.id == 0){ //Revive
+							System.out.println("revive");
+						}else if (p.id == 1){ //Triple shot
+							ge.setTripleShot();
+						}else if(p.id == 2){ //Invincible
+							System.out.println("invincible");
+						}else if(p.id == 3){ //Freeze
+							System.out.println("freeze");
+						}
+					}
+				}
+				powerUpCounter++;
 			}
 			entityCounter++;
 		}

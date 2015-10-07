@@ -1,6 +1,7 @@
 package com.mygdx.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -8,11 +9,12 @@ import com.badlogic.gdx.math.Rectangle;
 
 public class GameEntity {
 	public Rectangle rect;
-	public float x, y, speed;
+	public float x, y, speed, tripleShotTimer;
 	public int direction, health, maxHealth;
+	public boolean dead;
 	public Animation animation;
 	boolean moving, movingDown, movingDownLeft, movingLeft, movingUpLeft, movingUp, movingUpRight, movingRight, movingDownRight;
-	boolean isPlayer;
+	boolean isPlayer, tripleShot;
 	final static int DOWN = 0, DOWNLEFT = 1, LEFT = 2, UPLEFT = 3, UP = 4, UPRIGHT = 5, RIGHT = 6, DOWNRIGHT = 7;
 	TextureRegion currentFrame;	
 	float frameTime = 0;
@@ -51,12 +53,23 @@ public class GameEntity {
 		upRightFrames[0] = new TextureRegion(spriteSheet1, 96, 96, 32, 32);
 		upRightFrames[1] = new TextureRegion(spriteSheet1, 128, 96, 32, 32);
 		upRightFrames[2] = new TextureRegion(spriteSheet1, 160, 96, 32, 32);
+		deadFrames[0] = new TextureRegion(spriteSheet1, 96, 224, 32, 32);
 		
 		animation = new Animation(.10f, downFrames);
+		tripleShot = false;
 	}
 	
 	public void respondToKeys(){
 		//Make sure to put this in the other classes
+	}
+	
+	public void setTripleShot(){
+		tripleShotTimer = 0;
+		tripleShot = true;
+		if(tripleShotTimer > 10){
+			tripleShot = false;
+			tripleShotTimer = 0;
+		}
 	}
 	
 	public void updateDirection(){
@@ -88,7 +101,9 @@ public class GameEntity {
 		
 		//Find the frame for each direction to hold it still
 		if(!moving){
-			if(direction == DOWN)
+			if(dead)
+				animation = new Animation(.10f, deadFrames[0]);
+			else if(direction == DOWN)
 				animation = new Animation(.10f, downFrames[0]);
 			else if(direction == LEFT)
 				animation = new Animation(.10f, leftFrames[0]);
@@ -137,6 +152,7 @@ public class GameEntity {
 			attemptYCoordChange(-speed);
 		}
 		rect.setPosition(x, y);
+		tripleShotTimer += Gdx.graphics.getDeltaTime();
 	}
 	
 	public void makeBullet(){
@@ -174,7 +190,6 @@ public class GameEntity {
 		movingDownRight = false;
 	}
 	
-	
 	TextureRegion[] downFrames = new TextureRegion[3];
 	TextureRegion[] upFrames = new TextureRegion[3];
 	TextureRegion[] rightFrames = new TextureRegion[3];
@@ -183,4 +198,5 @@ public class GameEntity {
 	TextureRegion[] downRightFrames = new TextureRegion[3];
 	TextureRegion[] upLeftFrames = new TextureRegion[3];
 	TextureRegion[] upRightFrames = new TextureRegion[3];
+	TextureRegion[] deadFrames = new TextureRegion[1];
 }

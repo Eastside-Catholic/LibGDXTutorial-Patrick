@@ -54,6 +54,22 @@ public class Hero2 extends GameEntity {
 		//x, y, direction, speed, texture, damage, hurts players
 		Pew newPew = new Pew(x, y, direction, 3, new Texture("bullet-blue-icon.png"), 1, false);
 		MyGdxGame.bullets.add(newPew);
-		return ;
+		if(tripleShot){
+			int direction1, direction2;
+			if(direction == 0){
+				direction1 = 1;
+				direction2 = 7;
+			}else if (direction == 7){
+				direction1 = 0;
+				direction2 = 6;
+			}else{
+				direction1 = direction + 1;
+				direction2 = direction -1;
+			}
+			Pew newPew2 = new Pew(x, y, direction1, 3, new Texture("bullet-blue-icon.png"), 1, false);
+			Pew newPew3 = new Pew(x, y, direction2, 3, new Texture("bullet-blue-icon.png"), 1, false);
+			MyGdxGame.bullets.add(newPew2);
+			MyGdxGame.bullets.add(newPew3);
+		}
 	}
 }
