@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-
 import java.util.List;
 import java.util.ArrayList;
 
@@ -19,6 +18,7 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	public static boolean allPlayersKilled;
 	public static List<Pew> bullets = new ArrayList<Pew>();
 	public static List<GameEntity> entities = new ArrayList<GameEntity>();
+	public static List<PowerUp> powerUps = new ArrayList<PowerUp>();
 	public float r = 0.5f, g = 0.9f, b = 0.3f;
 	private int i = 0;
 	private BitmapFont font;
@@ -54,13 +54,11 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 			checkCollision();
 		}
 		batch.begin();
-		drawEntitiesAndBullets();//Draw all the things to the screen
+		drawGameElements();//Draw all the things to the screen
 		if(allPlayersKilled){
 			i++;
 			font.draw(batch, "YOU DIED", 450, 275);
-			r = .9f;
-			g = 0f;
-			b = 0f;
+			r = .9f; g = 0f; b = 0f;
 			if(i == 200){
 				resetWorld();
 			}
@@ -69,18 +67,21 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	}
 	
 	public void resetWorld(){
+		//Entity constructor is x, y, direction number, speed, sprite sheet, health, isPlayer
 		entities.clear();
-		Hero hero = new Hero(100, 100, 0, 2, hero1Sheet, 10, true);
+		Hero hero = new Hero(100, 100, 0, 1, hero1Sheet, 10, true);
 		entities.add(hero);
-		Hero2 hero2 = new Hero2(150, 100, 0, 2  , hero2Sheet, 10, true);
+		Hero2 hero2 = new Hero2(150, 100, 0, 1, hero2Sheet, 10, true);
 		entities.add(hero2);
+		PowerUp pwr = new PowerUp(2, 400, 200);
+		powerUps.add(pwr);
 		allPlayersKilled = false;
-		i =  0;
+		i =  0; r = .5f; g = .9f; b = .3f;
 		int randX, randY;
-		for(int x = 0; x < 2; x++){
+		for(int x = 0; x < 5; x++){
 			randX =(int)(Math.random() * (Gdx.graphics.getWidth() - 32));
 			randY =(int)(Math.random() * (Gdx.graphics.getHeight() - 32));
-			Enemy enemy1 = new Enemy(randX, randY, 0, 1, enemy1Sheet, 23, false);
+			Enemy enemy1 = new Enemy(randX, randY, 0, (float)0.5, enemy1Sheet, 23, false);
 			entities.add(enemy1);
 		}
 	}
@@ -91,7 +92,7 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		}
 	}
 	
-	public void drawEntitiesAndBullets(){
+	public void drawGameElements(){
 		for(GameEntity e: entities){
 			batch.draw(e.getCurrentFrame(), e.x, e.y);
 			float healthPercent = ((float)e.health/(float)e.maxHealth);
@@ -105,17 +106,15 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 				useTexture = mostHealth;
 			}
 			//rect = new TextureRegion(useTexture, useTexture.getWidth(), useTexture.getHeight(), 1, 1);
-			batch.draw(useTexture, e.x+8, e.y+32, 16, 6);
+			batch.draw(useTexture, e.x+8, e.y-5, 16, 6);
 			//batch.draw(rect, e.x+32, e.y+16, 16, 16);
 		}
 		for(Pew tempPew: bullets){
 			batch.draw(tempPew.bulletTexture, tempPew.x, tempPew.y);  
 		}
-	}
-	
-	public void DeathActions(){
-		Gdx.gl.glClearColor(.9f, .0f, .0f, 1);
-		batch.draw(new Texture("hero.jpg"), 500, 500);
+		for(PowerUp p: powerUps){
+			batch.draw(p.texture, p.x, p.y);
+		}
 	}
 	
 	public void calculatePosition(){

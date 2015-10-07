@@ -51,7 +51,8 @@ public class Hero2 extends GameEntity {
 	
 	@Override
 	public void makeBullet(){
-		Pew newPew = new Pew(x, y, direction, 10, new Texture("bullet-blue-icon.png"), 1, false);
+		//x, y, direction, speed, texture, damage, hurts players
+		Pew newPew = new Pew(x, y, direction, 3, new Texture("bullet-blue-icon.png"), 1, false);
 		MyGdxGame.bullets.add(newPew);
 		return ;
 	}
