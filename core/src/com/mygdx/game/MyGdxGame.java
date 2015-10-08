@@ -97,7 +97,7 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 			int randY = (int)((Gdx.graphics.getHeight()-32)* Math.random());
 			pwrup= new PowerUp(randInt, randX, randY);
 			powerUps.add(pwrup);
-			System.out.println("printed");
+			//System.out.println("printed");
 		}
 	}
 	
@@ -118,7 +118,6 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 				useTexture = medHealth;
 			else if (healthPercent <= .90)
 				useTexture = mostHealth;
-			
 			batch.draw(useTexture, e.x+8, e.y-5, 16, 6);
 		}
 		for(Pew tempPew: bullets){
@@ -147,19 +146,22 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		int powerUpCounter = 0;
 		List<Integer> entitiesToRemove = new ArrayList<Integer>();
 		List<Integer> bulletsToRemove = new ArrayList<Integer>();
+		List<Integer> powerUpsToRemove = new ArrayList<Integer>();
 		for(GameEntity ge: entities){
 			bulletCounter = 0;
 			for(Pew bullet: bullets){
 				if(bullet.rect.overlaps(ge.rect)){
 					if((!bullet.hurtPlayers && !ge.isPlayer) || (bullet.hurtPlayers && ge.isPlayer)){
-						ge.health -= bullet.damage;  
-						if(ge.health <= 0){
-							if(ge.isPlayer)
-								ge.dead = true;
-							else
-								entitiesToRemove.add(entityCounter);
+						if(!ge.invincible){
+							ge.health -= bullet.damage;  
+							if(ge.health <= 0){
+								if(ge.isPlayer)
+									ge.dead = true;
+								else
+									entitiesToRemove.add(entityCounter);
+							}
+							bulletsToRemove.add(bulletCounter);
 						}
-						bulletsToRemove.add(bulletCounter);
 					}
 				}
 				bulletCounter++;
@@ -169,12 +171,17 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 					if(ge.isPlayer){
 						if(p.id == 0){ //Revive
 							System.out.println("revive");
+							powerUpsToRemove.add(powerUpCounter);
 						}else if (p.id == 1){ //Triple shot
 							ge.setTripleShot();
+							powerUpsToRemove.add(powerUpCounter);
 						}else if(p.id == 2){ //Invincible
-							System.out.println("invincible");
+							ge.setInvincible();
+							powerUpsToRemove.add(powerUpCounter);
+							System.out.println("should remove" + powerUpsToRemove.size());
 						}else if(p.id == 3){ //Freeze
 							System.out.println("freeze");
+							powerUpsToRemove.add(powerUpCounter);
 						}
 					}
 				}
@@ -187,12 +194,24 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 			try{
 			bullets.remove(bulletsToRemove.get(x).intValue());
 			}catch(Exception e){
-				System.out.println("Prevented an error in removing bullets");
+				//System.out.println("Prevented an error in removing bullets");
 			}
 		}
 		for(int x = entitiesToRemove.size() - 1; x >= 0; x--){
-			entities.remove(entitiesToRemove.get(x).intValue());
+			try{
+				entities.remove(entitiesToRemove.get(x).intValue());
+			}catch(Exception e){
+				
+			}
 		}
+		System.out.println(powerUpsToRemove.size());
+		for(int x = powerUpsToRemove.size() - 1; x >=0; x--)
+			//try{
+			//powerUps.remove(powerUpsToRemove.get(x).intValue());
+			System.out.println("removing index " + x);
+			//}catch(Exception e){
+			//	System.out.println("error with removing powerups");
+			//}
 	}
 		
 	public void updateBullets(){

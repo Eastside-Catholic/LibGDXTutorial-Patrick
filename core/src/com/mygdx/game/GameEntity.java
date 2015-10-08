@@ -1,7 +1,6 @@
 package com.mygdx.game;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -9,7 +8,8 @@ import com.badlogic.gdx.math.Rectangle;
 
 public class GameEntity {
 	public Rectangle rect;
-	public float x, y, speed, tripleShotTimer;
+	public boolean invincible;
+	public float x, y, speed, tripleShotTimer, invincibleTimer;
 	public int direction, health, maxHealth;
 	public boolean dead;
 	public Animation animation;
@@ -57,19 +57,23 @@ public class GameEntity {
 		
 		animation = new Animation(.10f, downFrames);
 		tripleShot = false;
+		invincible = false;
 	}
 	
 	public void respondToKeys(){
 		//Make sure to put this in the other classes
 	}
 	
+	public void setInvincible(){
+		invincibleTimer = 0;
+		invincible = true;
+		
+	}
+	
 	public void setTripleShot(){
 		tripleShotTimer = 0;
 		tripleShot = true;
-		if(tripleShotTimer > 10){
-			tripleShot = false;
-			tripleShotTimer = 0;
-		}
+		
 	}
 	
 	public void updateDirection(){
@@ -153,6 +157,15 @@ public class GameEntity {
 		}
 		rect.setPosition(x, y);
 		tripleShotTimer += Gdx.graphics.getDeltaTime();
+		invincibleTimer += Gdx.graphics.getDeltaTime();
+		if(invincibleTimer > 10){
+			invincible= false;
+			invincibleTimer = 0;
+		}
+		if(tripleShotTimer > 10){
+			tripleShot = false;
+			tripleShotTimer = 0;
+		}
 	}
 	
 	public void makeBullet(){
@@ -199,4 +212,5 @@ public class GameEntity {
 	TextureRegion[] upLeftFrames = new TextureRegion[3];
 	TextureRegion[] upRightFrames = new TextureRegion[3];
 	TextureRegion[] deadFrames = new TextureRegion[1];
+	
 }

@@ -71,6 +71,5 @@ public class Hero extends GameEntity{
 			MyGdxGame.bullets.add(newPew2);
 			MyGdxGame.bullets.add(newPew3);
 		}
-		
 	}
 }
