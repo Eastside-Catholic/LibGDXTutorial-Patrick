@@ -13,40 +13,40 @@ public class Hero extends GameEntity{
 	
 	@Override
 	public void respondToKeys(){
-		timeSummary += Gdx.graphics.getDeltaTime();
-		if(Gdx.input.isKeyPressed(Input.Keys.SPACE) && timeSummary > 0.3){
-			makeBullet();
-			timeSummary = 0;
-		}
-		setAllDirectionsFalse();
-		moving = true;
-		if(Gdx.input.isKeyPressed(Input.Keys.A) && Gdx.input.isKeyPressed(Input.Keys.W)){
-			movingUpLeft = true;
-			return;
-		}else if (Gdx.input.isKeyPressed(Input.Keys.A) && Gdx.input.isKeyPressed(Input.Keys.S)){
-			movingDownLeft = true;
-			return;
-		}else if(Gdx.input.isKeyPressed(Input.Keys.A)){
-			movingLeft = true;	
-			return;
-		}else if(Gdx.input.isKeyPressed(Input.Keys.D) && Gdx.input.isKeyPressed(Input.Keys.W)){
-			movingUpRight = true;
-			return;
-		}else if (Gdx.input.isKeyPressed(Input.Keys.D) && Gdx.input.isKeyPressed(Input.Keys.S)){
-			movingDownRight = true;
-			return;
-		}else if(Gdx.input.isKeyPressed(Input.Keys.D)){
-			movingRight = true;
-			return;
-		}else if(Gdx.input.isKeyPressed(Input.Keys.W)){
-			movingUp = true;
-			return;
-		}else if(Gdx.input.isKeyPressed(Input.Keys.S)){
-			movingDown = true;
-			return;
-		}
-		moving = false;
-		return;
+			timeSummary += Gdx.graphics.getDeltaTime();
+			if(Gdx.input.isKeyPressed(Input.Keys.SPACE) && timeSummary > 0.3){
+				makeBullet();
+				timeSummary = 0;
+			}
+			setAllDirectionsFalse();
+			moving = true;
+			if(Gdx.input.isKeyPressed(Input.Keys.A) && Gdx.input.isKeyPressed(Input.Keys.W)){
+				movingUpLeft = true;
+				return;
+			}else if (Gdx.input.isKeyPressed(Input.Keys.A) && Gdx.input.isKeyPressed(Input.Keys.S)){
+				movingDownLeft = true;
+				return;
+			}else if(Gdx.input.isKeyPressed(Input.Keys.A)){
+				movingLeft = true;	
+				return;
+			}else if(Gdx.input.isKeyPressed(Input.Keys.D) && Gdx.input.isKeyPressed(Input.Keys.W)){
+				movingUpRight = true;
+				return;
+			}else if (Gdx.input.isKeyPressed(Input.Keys.D) && Gdx.input.isKeyPressed(Input.Keys.S)){
+				movingDownRight = true;
+				return;
+			}else if(Gdx.input.isKeyPressed(Input.Keys.D)){
+				movingRight = true;
+				return;
+			}else if(Gdx.input.isKeyPressed(Input.Keys.W)){
+				movingUp = true;
+				return;
+			}else if(Gdx.input.isKeyPressed(Input.Keys.S)){
+				movingDown = true;
+				return;
+			}
+			moving = false;
+		
 	}
 	
 	@Override

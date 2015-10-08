@@ -77,7 +77,10 @@ public class GameEntity {
 	}
 	
 	public void updateDirection(){
-		if(movingDown){
+		if(dead){
+			setAllDirectionsFalse();
+			animation = new Animation(.10f, deadFrames[0]);
+		}else if(movingDown){
 			direction = DOWN;
 			animation = new Animation(.10f, downFrames);
 		}else if(movingLeft){
