@@ -90,7 +90,7 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 				randX =(int)(Math.random() * (Gdx.graphics.getWidth() - 32));
 				randY = 0;
 			}
-			Enemy enemy1 = new Enemy(randX, randY, 0, (float)0.5, enemy1Sheet, 5, false);
+			Enemy enemy1 = new Enemy(randX, randY, 0, (float)5, enemy1Sheet, 5, false);
 			entities.add(enemy1);
 		}
 	}
