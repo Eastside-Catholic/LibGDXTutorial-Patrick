@@ -71,7 +71,30 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		}
 		batch.end();
 	}
-		
+	
+	public void spawnEnemy(int num){
+		int side, randX = 0, randY = 0;
+		final int  LEFT = 0, UP = 1, RIGHT = 2, DOWN = 3;
+		for(int x = num; x > 0; x--){
+			side = (int)(Math.random() * 4);//if the value is 0, spawn on left. else right
+			if(side == LEFT){
+				randX = 0;
+				randY =(int)(Math.random() * (Gdx.graphics.getHeight() - 32));
+			}else if (side == UP){
+				randX =(int)(Math.random() * (Gdx.graphics.getWidth() - 32));
+				randY = Gdx.graphics.getHeight()-32;
+			}else if (side == RIGHT){
+				randX = Gdx.graphics.getWidth() - 32;
+				randY =(int)(Math.random() * (Gdx.graphics.getHeight() - 32));
+			}else if (side == DOWN){
+				randX =(int)(Math.random() * (Gdx.graphics.getWidth() - 32));
+				randY = 0;
+			}
+			Enemy enemy1 = new Enemy(randX, randY, 0, (float)0.5, enemy1Sheet, 5, false);
+			entities.add(enemy1);
+		}
+	}
+	
 	public void drawGameElements(){
 		for(GameEntity e: entities){
 			batch.draw(e.getCurrentFrame(), e.x, e.y);
@@ -242,6 +265,10 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 			pwrup= new PowerUp(randInt, randX, randY);
 			powerUps.add(pwrup);
 		}
+		randInt = (int)(150 * Math.random());
+		if(randInt == 30){
+			spawnEnemy(1);
+		}
 	}
 
 	public boolean areCoordsInWindow(float x, float y){
@@ -264,12 +291,6 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		powerUps.add(pwr);
 		allPlayersKilled = false;
 		i =  0; r = .5f; g = .9f; b = .3f;
-		int randX, randY;
-		for(int x = 0; x < 5; x++){
-			randX =(int)(Math.random() * (Gdx.graphics.getWidth() - 32));
-			randY =(int)(Math.random() * (Gdx.graphics.getHeight() - 32));
-			Enemy enemy1 = new Enemy(randX, randY, 0, (float)0.5, enemy1Sheet, 23, false);
-			entities.add(enemy1);
-		}
+		spawnEnemy(5);
 	}
 }
