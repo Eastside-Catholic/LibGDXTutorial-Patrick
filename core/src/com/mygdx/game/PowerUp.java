@@ -25,8 +25,8 @@ public class PowerUp {
 			texture = tripleTex;
 		if(id == 2)
 			texture = invincibleTex;
-		if(id == 3)
-			texture = freezeTex;
+		//if(id == 3)
+			//texture = freezeTex;
 		
 
 	}

@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 public class Hero extends GameEntity{
 	float timeSummary;
 	boolean isPlayer = true;
+	Texture orangeBullet = new Texture("bullet-orange-icon.png");
 	Hero(float x, float y, int direction, float speed, Texture spriteSheet1, int health, boolean isPlayer){
 		super(x, y, direction, speed, spriteSheet1, health, isPlayer);
 	}
@@ -66,8 +67,8 @@ public class Hero extends GameEntity{
 				direction1 = direction + 1;
 				direction2 = direction -1;
 			}
-			Pew newPew2 = new Pew(x, y, direction1, 3, new Texture("bullet-orange-icon.png"), 1, false);
-			Pew newPew3 = new Pew(x, y, direction2, 3, new Texture("bullet-orange-icon.png"), 1, false);
+			Pew newPew2 = new Pew(x, y, direction1, 3, orangeBullet, 1, false);
+			Pew newPew3 = new Pew(x, y, direction2, 3, orangeBullet, 1, false);
 			MyGdxGame.bullets.add(newPew2);
 			MyGdxGame.bullets.add(newPew3);
 		}

@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.Texture;
 public class Enemy extends GameEntity{
 	boolean isPlayer = false;
 	float timeSummary;
+	float timeGoal = (float)(4*Math.random()) +(float)3.5;
+	Texture greenBullet = new Texture("bullet-green-icon.png");
 	final static float POINTFOURONE = (float) 0.41421, TWOPOINTFOUR = (float)2.414; 
 	Enemy(float x, float y, int direction, float speed, Texture spriteSheet1, int health, boolean isPlayer){
 		super(x, y, direction, speed, spriteSheet1, health, isPlayer);
@@ -14,9 +16,10 @@ public class Enemy extends GameEntity{
 	@Override
 	public void respondToKeys(){
 		timeSummary += Gdx.graphics.getDeltaTime();
-		if(timeSummary > 5){
+		if(timeSummary > timeGoal){
 			makeBullet();
 			timeSummary = 0;
+			timeGoal = (float)(4*Math.random()) +(float)3.5;
 		}
 		setAllDirectionsFalse();
 		int i = 0;
@@ -93,7 +96,7 @@ public class Enemy extends GameEntity{
 	}
 	
 	public void makeBullet(){
-		Pew newPew = new Pew(x, y, direction, 3, new Texture("bullet-green-icon.png"), 1, true);
+		Pew newPew = new Pew(x, y, direction, 3, greenBullet, 1, true);
 		MyGdxGame.bullets.add(newPew);
 	}
 }

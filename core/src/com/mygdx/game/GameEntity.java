@@ -11,6 +11,7 @@ public class GameEntity {
 	public boolean invincible;
 	public float x, y, speed, tripleShotTimer, invincibleTimer;
 	public int direction, health, maxHealth;
+	public int extraLifeCount = 0;
 	public boolean dead;
 	public Animation animation;
 	boolean moving, movingDown, movingDownLeft, movingLeft, movingUpLeft, movingUp, movingUpRight, movingRight, movingDownRight;

@@ -20,10 +20,11 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	public static List<GameEntity> entities = new ArrayList<GameEntity>();
 	public static List<PowerUp> powerUps = new ArrayList<PowerUp>();
 	public float r = 0.5f, g = 0.9f, b = 0.3f;
+	//public float clock = 0;
 	private int i = 0;
 	private BitmapFont font;
 	PowerUp pwrup;
-	Texture hero1Sheet, hero2Sheet, enemy1Sheet, lowHealth, medHealth, mostHealth, allHealth;
+	Texture hero1Sheet, hero2Sheet, enemy1Sheet, lowHealth, medHealth, mostHealth, allHealth, bubbleShield, smallHeart;
 	TextureRegion rect;
 	
 	
@@ -40,11 +41,14 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		medHealth = new Texture("someHealth.png");
 		mostHealth = new Texture("mostHealth.png");
 		allHealth = new Texture("allHealth.png");
+		bubbleShield = new Texture("playershield.png");
+		smallHeart = new Texture("heart_small.png");
 		resetWorld();
 	}
 
 	@Override
 	public void render() {	
+		//clock += Gdx.graphics.getDeltaTime();
 		Gdx.gl.glClearColor(r, g, b, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		if(!Gdx.input.isKeyPressed(Input.Keys.P)){
@@ -59,7 +63,7 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		drawGameElements();//Draw all the things to the screen
 		if(allPlayersKilled){
 			i++;
-			font.draw(batch, "YOU DIED", 450, 275);
+			font.draw(batch, "YOU DIED", 550, 300);
 			r = .9f; g = 0f; b = 0f;
 			if(i == 200)
 				resetWorld();
@@ -67,24 +71,6 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		batch.end();
 	}
 		
-	public void randomGeneration(){
-		int randInt = (int)(300 * Math.random());
-		if(randInt == 150){
-			randInt = (int)(4*Math.random());
-			int randX = (int)((Gdx.graphics.getWidth()-32) * Math.random());
-			int randY = (int)((Gdx.graphics.getHeight()-32)* Math.random());
-			pwrup= new PowerUp(randInt, randX, randY);
-			powerUps.add(pwrup);
-		}
-	}
-	
-	public void checkKeysPressed(){
-		for(GameEntity e: entities){
-			if(!e.dead)
-				e.respondToKeys();
-		}
-	}
-	
 	public void drawGameElements(){
 		for(GameEntity e: entities){
 			batch.draw(e.getCurrentFrame(), e.x, e.y);
@@ -97,6 +83,14 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 			else if (healthPercent <= .90)
 				useTexture = mostHealth;
 			batch.draw(useTexture, e.x+8, e.y-5, 16, 6);
+			if(e.extraLifeCount >= 1){
+				batch.draw(smallHeart, e.x+7, e.y+32, 8, 8);
+			}
+			if(e.extraLifeCount == 2){
+				batch.draw(smallHeart, e.x+18, e.y+32, 8, 8);
+			}
+			if(e.invincible)
+				batch.draw(bubbleShield, e.x -5, e.y-5, 42, 42);//slow???
 		}
 		for(Pew tempPew: bullets){
 			batch.draw(tempPew.bulletTexture, tempPew.x, tempPew.y);  
@@ -106,9 +100,10 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		}
 	}
 	
-	public void calculatePosition(){
+	public void checkKeysPressed(){
 		for(GameEntity e: entities){
-			e.updatePosition();
+			if(!e.dead)
+				e.respondToKeys();
 		}
 	}
 	
@@ -116,6 +111,27 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		for(GameEntity e: entities){
 			e.updateDirection();
 		}
+	}
+	
+	public void calculatePosition(){
+		for(GameEntity e: entities){
+			e.updatePosition();
+		}
+	}
+	
+	public void updateBullets(){
+		int i = 0;
+		List<Integer> bulletsToDestroy = new ArrayList<Integer>();
+		//This enhanced for loop updates the bullets, then notes the index of ones that should be removed.
+		for(Pew tempPew: bullets){
+			tempPew.update();
+			if(!areCoordsInWindow(tempPew.x, tempPew.y))
+				bulletsToDestroy.add(i);
+			i++;
+		}
+		//Cycles through and removes them from the list from the top down
+		for(int x = bulletsToDestroy.size() - 1; x >= 0; x--)
+			bullets.remove(bulletsToDestroy.get(x).intValue());
 	}
 	
 	public void checkCollision(){
@@ -133,9 +149,13 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 						if(!ge.invincible){
 							ge.health -= bullet.damage;  
 							if(ge.health <= 0){
-								if(ge.isPlayer)
-									ge.dead = true;
-								else
+								if(ge.isPlayer){
+									if(ge.extraLifeCount > 0){
+										ge.extraLifeCount--;
+										ge.health = ge.maxHealth;
+									}else
+										ge.dead = true;
+								}else
 									entitiesToRemove.add(entityCounter);
 							}
 							bulletsToRemove.add(bulletCounter);
@@ -149,8 +169,10 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 				if(p.rect.overlaps(ge.rect)){
 					if(ge.isPlayer){
 						if(p.id == 0){ //Revive
-							System.out.println("revive");
-							powerUpsToRemove.add(powerUpCounter);
+							if(ge.extraLifeCount < 2){
+								ge.extraLifeCount++;
+								powerUpsToRemove.add(powerUpCounter);
+							}
 						}else if (p.id == 1){ //Triple shot
 							ge.setTripleShot();
 							powerUpsToRemove.add(powerUpCounter);
@@ -164,6 +186,24 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 					}
 				}
 				powerUpCounter++;
+			}
+			for(GameEntity ge2: entities){
+				if(ge.rect.overlaps(ge2.rect)){
+					if((ge.isPlayer && !ge.dead) && (ge2.isPlayer && ge2.dead)){
+						if(ge.extraLifeCount > 0){
+							ge.extraLifeCount--;
+							ge2.dead = false;
+							ge2.health = ge2.maxHealth;
+						}
+					}
+					else if((ge.isPlayer && ge.dead) && (ge2.isPlayer && !ge2.dead)){
+						if(ge2.extraLifeCount > 0){
+							ge2.extraLifeCount--;
+							ge.dead = false;
+							ge.health = ge2.maxHealth;
+						}
+					}
+				}
 			}
 			entityCounter++;
 		}
@@ -192,19 +232,15 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		}
 	}
 		
-	public void updateBullets(){
-		int i = 0;
-		List<Integer> bulletsToDestroy = new ArrayList<Integer>();
-		//This enhanced for loop updates the bullets, then notes the index of ones that should be removed.
-		for(Pew tempPew: bullets){
-			tempPew.update();
-			if(!areCoordsInWindow(tempPew.x, tempPew.y))
-				bulletsToDestroy.add(i);
-			i++;
+	public void randomGeneration(){
+		int randInt = (int)(300 * Math.random());
+		if(randInt == 150){
+			randInt = (int)(3*Math.random());
+			int randX = (int)((Gdx.graphics.getWidth()-32) * Math.random());
+			int randY = (int)((Gdx.graphics.getHeight()-32)* Math.random());
+			pwrup= new PowerUp(randInt, randX, randY);
+			powerUps.add(pwrup);
 		}
-		//Cycles through and removes them from the list from the top down
-		for(int x = bulletsToDestroy.size() - 1; x >= 0; x--)
-			bullets.remove(bulletsToDestroy.get(x).intValue());
 	}
 
 	public boolean areCoordsInWindow(float x, float y){
