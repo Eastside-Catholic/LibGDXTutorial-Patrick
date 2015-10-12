@@ -21,9 +21,10 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	public static List<GameEntity> entities = new ArrayList<GameEntity>();
 	public static List<PowerUp> powerUps = new ArrayList<PowerUp>();
 	public float r = 0.5f, g = 0.9f, b = 0.3f;
+	public int score = 0;
 	//public float clock = 0;
 	private int i = 0;
-	private BitmapFont font;
+	private BitmapFont font, font2;
 	PowerUp pwrup;
 	Texture hero1Sheet, hero2Sheet, enemy1Sheet, lowHealth, medHealth, mostHealth, allHealth, bubbleShield, smallHeart;
 	TextureRegion rect;
@@ -33,6 +34,8 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	public void create (){
 		font = new BitmapFont();
 		font.setColor(Color.ORANGE);
+		font2 = new BitmapFont();
+		font2.setColor(Color.BLACK);
 		Gdx.graphics.setDisplayMode(1067, 600, false);
 		batch = new SpriteBatch();
 		hero1Sheet = new Texture("Hero.jpg");
@@ -90,7 +93,7 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 				randX =(int)(Math.random() * (Gdx.graphics.getWidth() - 32));
 				randY = 0;
 			}
-			Enemy enemy1 = new Enemy(randX, randY, 0, (float)5, enemy1Sheet, 5, false);
+			Enemy enemy1 = new Enemy(randX, randY, 0, (float).5, enemy1Sheet, 5, false);
 			entities.add(enemy1);
 		}
 	}
@@ -122,6 +125,8 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		for(PowerUp p: powerUps){
 			batch.draw(p.texture, p.x, p.y, 32, 32);
 		}
+		font2.draw(batch, "Score: ", 4, Gdx.graphics.getHeight() - 5);
+		font2.draw(batch, new Integer(score).toString(), 4, Gdx.graphics.getHeight() - 20);
 	}
 	
 	public void checkKeysPressed(){
@@ -159,15 +164,10 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	}
 	
 	public void checkCollision(){
-		int entityCounter = 0;
-		int bulletCounter = 0;
-		int powerUpCounter = 0;
-		List<Integer> entitiesToRemove = new ArrayList<Integer>();
-		List<Integer> bulletsToRemove = new ArrayList<Integer>();
-		List<Integer> powerUpsToRemove = new ArrayList<Integer>();
-		for(GameEntity ge: entities){
-			bulletCounter = 0;
-			for(Pew bullet: bullets){
+		for(int entityCounter = entities.size()-1; entityCounter >=0; entityCounter--){
+			GameEntity ge = entities.get(entityCounter);
+			for(int bulletCounter = bullets.size()-1; bulletCounter >= 0; bulletCounter--){
+				Pew bullet = bullets.get(bulletCounter);
 				if(bullet.rect.overlaps(ge.rect)){
 					if((!bullet.hurtPlayers && !ge.isPlayer) || (bullet.hurtPlayers && ge.isPlayer)){
 						if(!ge.invincible){
@@ -179,37 +179,38 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 										ge.health = ge.maxHealth;
 									}else
 										ge.dead = true;
-								}else
-									entitiesToRemove.add(entityCounter);
+									score -= 50;
+								}else{
+									entities.remove(entityCounter);
+									score += 10;
+								}
 							}
-							bulletsToRemove.add(bulletCounter);
+							bullets.remove(bulletCounter);
 						}
 					}
 				}
-				bulletCounter++;
 			}
-			powerUpCounter = 0;
-			for(PowerUp p: powerUps){
+			for(int powerUpCounter = powerUps.size()-1; powerUpCounter >= 0; powerUpCounter--){
+				PowerUp p = powerUps.get(powerUpCounter);
 				if(p.rect.overlaps(ge.rect)){
 					if(ge.isPlayer){
 						if(p.id == 0){ //Revive
 							if(ge.extraLifeCount < 2){
 								ge.extraLifeCount++;
-								powerUpsToRemove.add(powerUpCounter);
+								powerUps.remove(powerUpCounter);
 							}
 						}else if (p.id == 1){ //Triple shot
 							ge.setTripleShot();
-							powerUpsToRemove.add(powerUpCounter);
+							powerUps.remove(powerUpCounter);
 						}else if(p.id == 2){ //Invincible
 							ge.setInvincible();
-							powerUpsToRemove.add(powerUpCounter);
+							powerUps.remove(powerUpCounter);
 						}else if(p.id == 3){ //Freeze
 							System.out.println("freeze");
-							powerUpsToRemove.add(powerUpCounter);
+							powerUps.remove(powerUpCounter);
 						}
 					}
 				}
-				powerUpCounter++;
 			}
 			for(GameEntity ge2: entities){
 				if(ge.rect.overlaps(ge2.rect)){
@@ -229,10 +230,9 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 					}
 				}
 			}
-			entityCounter++;
 		}
 		
-		for(int x = bulletsToRemove.size() - 1; x >= 0; x--){
+		/*for(int x = bulletsToRemove.size() - 1; x >= 0; x--){
 			try{
 			bullets.remove(bulletsToRemove.get(x).intValue());
 			}catch(Exception e){
@@ -253,7 +253,7 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 			}catch(Exception e){
 				System.out.println("error with removing powerups");
 			}
-		}
+		}*/
 	}
 		
 	public void randomGeneration(){
