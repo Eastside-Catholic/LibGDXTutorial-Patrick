@@ -22,11 +22,11 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	public static List<PowerUp> powerUps = new ArrayList<PowerUp>();
 	public float r = 0.5f, g = 0.9f, b = 0.3f;
 	public int score = 0;
-	//public float clock = 0;
 	private int i = 0;
 	private BitmapFont font, font2;
 	PowerUp pwrup;
-	Texture hero1Sheet, hero2Sheet, enemy1Sheet, lowHealth, medHealth, mostHealth, allHealth, bubbleShield, smallHeart;
+	Texture hero1Sheet, hero2Sheet, enemy1Sheet, lowHealth, medHealth, mostHealth, allHealth, 
+	bubbleShield, smallHeart;
 	TextureRegion rect;
 	
 	
@@ -36,9 +36,9 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		font.setColor(Color.ORANGE);
 		font2 = new BitmapFont();
 		font2.setColor(Color.BLACK);
-		Gdx.graphics.setDisplayMode(1067, 600, false);
+		Gdx.graphics.setDisplayMode(1067, 600, false); //set window size
 		batch = new SpriteBatch();
-		hero1Sheet = new Texture("Hero.jpg");
+		hero1Sheet = new Texture("Hero.jpg"); //load textures
 		hero2Sheet = new Texture("Hero2.png");
 		enemy1Sheet = new Texture("Enemy1.jpg");
 		lowHealth = new Texture("lowHealth.png");
@@ -52,20 +52,19 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 
 	@Override
 	public void render() {	
-		//clock += Gdx.graphics.getDeltaTime();
 		Gdx.gl.glClearColor(r, g, b, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		if(!Gdx.input.isKeyPressed(Input.Keys.P)){
-			checkKeysPressed(); //Have each entity respond to any keys
-			setDirection();		//Have each entity set its new direction, if applicable
-			calculatePosition();//Have each entity update its position based on its new direction
-			updateBullets();	//Have each bullet update its position based on its vector
-			checkCollision();
-			randomGeneration();
+			allRespondToKeys();   //Have each entity respond to any keys
+			allUpdateDirection(); //Have each entity set its new direction, if applicable
+			allUpdatePosition();  //Have each entity update its position based on its new direction
+			updateBullets();	  //Have each bullet update its position based on its vector
+			checkCollision();	  //Go through the hit-boxes and see if they collide and act accordingly
+			randomGeneration();   //Generate power-ups and enemies
 		}
 		batch.begin();
 		drawGameElements();//Draw all the things to the screen
-		if(allPlayersKilled){
+		if(allPlayersKilled){ //Displays the YOU DIED screen for a short time, then reset the world.
 			i++;
 			font.draw(batch, "YOU DIED", 550, 300);
 			r = .9f; g = 0f; b = 0f;
@@ -78,14 +77,15 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	public void spawnEnemy(int num){
 		int side, randX = 0, randY = 0;
 		final int  LEFT = 0, UP = 1, RIGHT = 2, DOWN = 3;
+		//for every number of entities that you call to spawn
 		for(int x = num; x > 0; x--){
-			side = (int)(Math.random() * 4);//if the value is 0, spawn on left. else right
+			side = (int)(Math.random() * 4);//choose a random side to spawn on
 			if(side == LEFT){
 				randX = 0;
 				randY =(int)(Math.random() * (Gdx.graphics.getHeight() - 32));
 			}else if (side == UP){
-				randX =(int)(Math.random() * (Gdx.graphics.getWidth() - 32));
-				randY = Gdx.graphics.getHeight()-32;
+				randX =(int)(Math.random() * (Gdx.graphics.getWidth() - 32));     //find out the random x and y for
+				randY = Gdx.graphics.getHeight()-32;							  //each side of the wall
 			}else if (side == RIGHT){
 				randX = Gdx.graphics.getWidth() - 32;
 				randY =(int)(Math.random() * (Gdx.graphics.getHeight() - 32));
@@ -93,12 +93,14 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 				randX =(int)(Math.random() * (Gdx.graphics.getWidth() - 32));
 				randY = 0;
 			}
+			//Entity constructor is x, y, direction number, speed, sprite sheet, health, isPlayer
 			Enemy enemy1 = new Enemy(randX, randY, 0, (float).5, enemy1Sheet, 5, false);
 			entities.add(enemy1);
 		}
 	}
 	
 	public void drawGameElements(){
+		//start by drawing all entities with their health bar, extra lives, and invincible bubble, is applicable.
 		for(GameEntity e: entities){
 			batch.draw(e.getCurrentFrame(), e.x, e.y);
 			float healthPercent = ((float)e.health/(float)e.maxHealth);
@@ -119,77 +121,99 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 			if(e.invincible)
 				batch.draw(bubbleShield, e.x -5, e.y-5, 42, 42);//slow???
 		}
+		//draw each bullet using its own texture
 		for(Pew tempPew: bullets){
 			batch.draw(tempPew.bulletTexture, tempPew.x, tempPew.y);  
 		}
+		//draw each power-up using its own texture
 		for(PowerUp p: powerUps){
 			batch.draw(p.texture, p.x, p.y, 32, 32);
 		}
+		//draw the scoreboard
 		font2.draw(batch, "Score: ", 4, Gdx.graphics.getHeight() - 5);
 		font2.draw(batch, new Integer(score).toString(), 4, Gdx.graphics.getHeight() - 20);
 	}
 	
-	public void checkKeysPressed(){
+	//call each entity to respond to keys. the method is blank by default and requires an override to do anything
+	public void allRespondToKeys(){
 		for(GameEntity e: entities){
 			if(!e.dead)
 				e.respondToKeys();
 		}
 	}
 	
-	public void setDirection(){
+	//call each entity's update direction method, which also updates its animation to be displayed
+	public void allUpdateDirection(){
 		for(GameEntity e: entities){
 			e.updateDirection();
 		}
 	}
 	
-	public void calculatePosition(){
+	//calls each entity's update position method which updates the position based on the direction and if moving
+	public void allUpdatePosition(){
 		for(GameEntity e: entities){
 			e.updatePosition();
 		}
 	}
 	
+	//calls each bullet to update its own position and if it has traveled out of screen, remove it.
 	public void updateBullets(){
-		int i = 0;
-		List<Integer> bulletsToDestroy = new ArrayList<Integer>();
-		//This enhanced for loop updates the bullets, then notes the index of ones that should be removed.
-		for(Pew tempPew: bullets){
-			tempPew.update();
+		for(int bulletCounter = bullets.size()-1; bulletCounter >=0; bulletCounter--){
+			Pew tempPew = bullets.get(bulletCounter);
+			tempPew.update(); //updates coords
 			if(!areCoordsInWindow(tempPew.x, tempPew.y))
-				bulletsToDestroy.add(i);
-			i++;
+				bullets.remove(bulletCounter);
 		}
-		//Cycles through and removes them from the list from the top down
-		for(int x = bulletsToDestroy.size() - 1; x >= 0; x--)
-			bullets.remove(bulletsToDestroy.get(x).intValue());
 	}
 	
+	//This lengthly method goes through and looks at overlapping hit-boxes and responds or ignores the collision
 	public void checkCollision(){
+		//For every game entity, ge, do this
+		//eachEntity: //this is called the each entity loop so that if the eni
 		for(int entityCounter = entities.size()-1; entityCounter >=0; entityCounter--){
 			GameEntity ge = entities.get(entityCounter);
+			//for every bullet, for each game entity, do this
+			eachEntity: //this is called the each entity loop so that if an enemy is removed, it
+						//immediately stops looking at the bullets relating to the enemy.
 			for(int bulletCounter = bullets.size()-1; bulletCounter >= 0; bulletCounter--){
 				Pew bullet = bullets.get(bulletCounter);
+				//if the bullet is hitting the game entity
 				if(bullet.rect.overlaps(ge.rect)){
+					//if the bullet hurts the players and it is a player, or if it does not hurt 
+					//players and it is not a player, then continue to look at the collision
 					if((!bullet.hurtPlayers && !ge.isPlayer) || (bullet.hurtPlayers && ge.isPlayer)){
+						//only continue if the entity is not invincible
 						if(!ge.invincible){
+							//hurt the entity
 							ge.health -= bullet.damage;  
+							//if the health is less than zero, continue
 							if(ge.health <= 0){
 								if(ge.isPlayer){
+									//if they have an extra life, take it from them and 
+									//return them to their original health
 									if(ge.extraLifeCount > 0){
 										ge.extraLifeCount--;
 										ge.health = ge.maxHealth;
 									}else
-										ge.dead = true;
-									score -= 50;
-								}else{
-									entities.remove(entityCounter);
-									score += 10;
+										ge.dead = true; //they die, locking them out of controls and movement.
+									score -= 50; //subtract 50 points for dying
+								}else{//if the entity is not a player...
+									try{
+										//try to remove them. Multiple bullets hitting the same entity has caused problems since we are still looking at the same entity oh wait i get it now.. i think. it is still instanciated above, so it is not actually gone so it is removing more than one entity upon death because multiple bullets have entered the hitbox.
+										entities.remove(entityCounter);
+										score += 10;
+										break eachEntity;
+									}catch(Exception e){
+										System.out.println("failed to remove dead enemies properly.");
+									}
 								}
 							}
+							//since the entity has been hurt by the bullet, even if not killed, remove bullet.
 							bullets.remove(bulletCounter);
 						}
 					}
-				}
-			}
+				}// end looking at their overlaping rectangles 
+			} // end looking at each bullet loop
 			for(int powerUpCounter = powerUps.size()-1; powerUpCounter >= 0; powerUpCounter--){
 				PowerUp p = powerUps.get(powerUpCounter);
 				if(p.rect.overlaps(ge.rect)){
@@ -282,6 +306,7 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		entities.clear();
 		bullets.clear();
 		powerUps.clear();
+		score = 0;
 		//Entity constructor is x, y, direction number, speed, sprite sheet, health, isPlayer
 		Hero hero = new Hero(100, 100, 0, 1, hero1Sheet, 10, true);
 		entities.add(hero);
