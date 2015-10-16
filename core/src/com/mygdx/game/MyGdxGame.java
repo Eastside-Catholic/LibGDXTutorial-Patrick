@@ -100,7 +100,7 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	}
 	
 	public void drawGameElements(){
-		//start by drawing all entities with their health bar, extra lives, and invincible bubble, is applicable.
+		//start by drawing all entities with their health bar, extra lives, and invincible bubble, as applicable.
 		for(GameEntity e: entities){
 			batch.draw(e.getCurrentFrame(), e.x, e.y);
 			float healthPercent = ((float)e.health/(float)e.maxHealth);
@@ -183,7 +183,7 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 					//players and it is not a player, then continue to look at the collision
 					if((!bullet.hurtPlayers && !ge.isPlayer) || (bullet.hurtPlayers && ge.isPlayer)){
 						//only continue if the entity is not invincible
-						if(!ge.invincible){
+						if(!ge.invincible && !ge.dead){
 							//hurt the entity
 							ge.health -= bullet.damage;  
 							//if the health is less than zero, continue
@@ -197,30 +197,26 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 									}else
 										ge.dead = true; //they die, locking them out of controls and movement.
 									score -= 50; //subtract 50 points for dying
-								}else{//if the entity is not a player...
-									try{
-										//try to remove them. Multiple bullets hitting the same entity has caused problems since we are still looking at the same entity oh wait i get it now.. i think. it is still instanciated above, so it is not actually gone so it is removing more than one entity upon death because multiple bullets have entered the hitbox.
-										entities.remove(entityCounter);
-										score += 10;
-										break eachEntity;
-									}catch(Exception e){
-										System.out.println("failed to remove dead enemies properly.");
-									}
+								}else{ //if the entity is not a player...
+									entities.remove(entityCounter);
+									score += 10;
+									break eachEntity; //since the entity was removed, stop looking at it and
+														  //bullets and go on to the next entity.
 								}
 							}
 							//since the entity has been hurt by the bullet, even if not killed, remove bullet.
 							bullets.remove(bulletCounter);
 						}
 					}
-				}// end looking at their overlaping rectangles 
+				}// end looking at their overlapping rectangles 
 			} // end looking at each bullet loop
-			for(int powerUpCounter = powerUps.size()-1; powerUpCounter >= 0; powerUpCounter--){
+			for(int powerUpCounter = powerUps.size()-1; powerUpCounter >= 0; powerUpCounter--){ //for every powerup
 				PowerUp p = powerUps.get(powerUpCounter);
 				if(p.rect.overlaps(ge.rect)){
-					if(ge.isPlayer){
+					if(ge.isPlayer && !ge.dead){ //if the powerup overlaps the entity box and the entity is a player
 						if(p.id == 0){ //Revive
-							if(ge.extraLifeCount < 2){
-								ge.extraLifeCount++;
+							if(ge.extraLifeCount < 2){ //Only add if you have less than two extra lives. 
+								ge.extraLifeCount++;   //only remove if used
 								powerUps.remove(powerUpCounter);
 							}
 						}else if (p.id == 1){ //Triple shot
@@ -236,8 +232,8 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 					}
 				}
 			}
-			for(GameEntity ge2: entities){
-				if(ge.rect.overlaps(ge2.rect)){
+			for(GameEntity ge2: entities){ 			//goes through and see if it is a player touching dead player, 
+				if(ge.rect.overlaps(ge2.rect)){		//then see if it should revive them
 					if((ge.isPlayer && !ge.dead) && (ge2.isPlayer && ge2.dead)){
 						if(ge.extraLifeCount > 0){
 							ge.extraLifeCount--;
@@ -245,39 +241,9 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 							ge2.health = ge2.maxHealth;
 						}
 					}
-					else if((ge.isPlayer && ge.dead) && (ge2.isPlayer && !ge2.dead)){
-						if(ge2.extraLifeCount > 0){
-							ge2.extraLifeCount--;
-							ge.dead = false;
-							ge.health = ge2.maxHealth;
-						}
-					}
 				}
 			}
-		}
-		
-		/*for(int x = bulletsToRemove.size() - 1; x >= 0; x--){
-			try{
-			bullets.remove(bulletsToRemove.get(x).intValue());
-			}catch(Exception e){
-				System.out.println("You know what you need to fix. Enemies should not be able to become one.");
-			}
-		}
-		for(int x = entitiesToRemove.size() - 1; x >= 0; x--){
-			try{
-				entities.remove(entitiesToRemove.get(x).intValue());
-			}catch(Exception e){
-				
-			}
-		}
-		
-		for(int x = powerUpsToRemove.size() - 1; x >=0; x--){
-			try{
-			powerUps.remove(powerUpsToRemove.get(x).intValue());
-			}catch(Exception e){
-				System.out.println("error with removing powerups");
-			}
-		}*/
+		}		
 	}
 		
 	public void randomGeneration(){
@@ -289,7 +255,7 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 			pwrup= new PowerUp(randInt, randX, randY);
 			powerUps.add(pwrup);
 		}
-		randInt = (int)(150 * Math.random());
+		randInt = (int)(120 * Math.random());
 		if(randInt == 30){
 			spawnEnemy(1);
 		}
@@ -308,9 +274,9 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		powerUps.clear();
 		score = 0;
 		//Entity constructor is x, y, direction number, speed, sprite sheet, health, isPlayer
-		Hero hero = new Hero(100, 100, 0, 1, hero1Sheet, 10, true);
+		Hero hero = new Hero(100, 100, 0, 1, hero1Sheet, 7, true);
 		entities.add(hero);
-		Hero2 hero2 = new Hero2(150, 100, 0, 1, hero2Sheet, 10, true);
+		Hero2 hero2 = new Hero2(150, 100, 0, 1, hero2Sheet, 7, true);
 		entities.add(hero2);
 		PowerUp pwr = new PowerUp(2, 400, 200);
 		powerUps.add(pwr);

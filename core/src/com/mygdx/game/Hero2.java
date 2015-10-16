@@ -52,7 +52,7 @@ public class Hero2 extends GameEntity {
 	@Override
 	public void makeBullet(){
 		//x, y, direction, speed, texture, damage, hurts players
-		Pew newPew = new Pew(x, y, direction, 3, new Texture("bullet-blue-icon.png"), 1, false);
+		Pew newPew = new Pew(x, y, direction, 4, new Texture("bullet-blue-icon.png"), 1, false);
 		MyGdxGame.bullets.add(newPew);
 		if(tripleShot){
 			int direction1, direction2;
@@ -66,8 +66,8 @@ public class Hero2 extends GameEntity {
 				direction1 = direction + 1;
 				direction2 = direction -1;
 			}
-			Pew newPew2 = new Pew(x, y, direction1, 3, blueBullet, 1, false);
-			Pew newPew3 = new Pew(x, y, direction2, 3, blueBullet, 1, false);
+			Pew newPew2 = new Pew(x, y, direction1, 4, blueBullet, 1, false);
+			Pew newPew3 = new Pew(x, y, direction2, 4, blueBullet, 1, false);
 			MyGdxGame.bullets.add(newPew2);
 			MyGdxGame.bullets.add(newPew3);
 		}
