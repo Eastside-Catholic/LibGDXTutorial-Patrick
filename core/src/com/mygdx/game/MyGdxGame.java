@@ -20,7 +20,6 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	public static List<Pew> bullets = new ArrayList<Pew>();
 	public static List<GameEntity> entities = new ArrayList<GameEntity>();
 	public static List<PowerUp> powerUps = new ArrayList<PowerUp>();
-	public float r = 0.5f, g = 0.9f, b = 0.3f;
 	public static int score = 0;
 	private int i = 0;
 	private BitmapFont font, font2;
@@ -56,7 +55,7 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 
 	@Override
 	public void render() {	
-		Gdx.gl.glClearColor(r, g, b, 1);
+		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		if(Gdx.input.isKeyPressed(Input.Keys.P)){
 			paused = true;
@@ -226,14 +225,13 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		powerUps.clear();
 		score = 0;
 		//Entity constructor is x, y, direction number, speed, sprite sheet, health, isPlayer
-		Hero hero = new Hero(100, 100, 0, 1, hero1Sheet, 7, true);
+		Hero hero = new Hero(100, Gdx.graphics.getHeight()/2, 0, 1, hero1Sheet, 7, true);
 		entities.add(hero);
-		Hero2 hero2 = new Hero2(100, 100, 0, 1, hero2Sheet, 7, true);
+		Hero2 hero2 = new Hero2(Gdx.graphics.getWidth() -100, Gdx.graphics.getHeight()/2, 0, 1, 
+				hero2Sheet, 7, true);
 		entities.add(hero2);
-		PowerUp pwr = new PowerUp(2, 400, 200);
-		powerUps.add(pwr);
 		allPlayersKilled = false;
-		i =  0; r = .5f; g = .9f; b = .3f;
+		i =  0;
 		spawnEnemy(5);
 	}
 }
