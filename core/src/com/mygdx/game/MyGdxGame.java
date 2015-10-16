@@ -21,19 +21,19 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	public static List<GameEntity> entities = new ArrayList<GameEntity>();
 	public static List<PowerUp> powerUps = new ArrayList<PowerUp>();
 	public float r = 0.5f, g = 0.9f, b = 0.3f;
-	public int score = 0;
+	public static int score = 0;
 	private int i = 0;
 	private BitmapFont font, font2;
 	PowerUp pwrup;
 	Texture hero1Sheet, hero2Sheet, enemy1Sheet, lowHealth, medHealth, mostHealth, allHealth, 
-	bubbleShield, smallHeart;
+	bubbleShield, smallHeart, background;
 	TextureRegion rect;
 	
 	
 	@Override
 	public void create (){
 		font = new BitmapFont();
-		font.setColor(Color.ORANGE);
+		font.setColor(Color.RED);
 		font2 = new BitmapFont();
 		font2.setColor(Color.BLACK);
 		Gdx.graphics.setDisplayMode(1067, 600, false); //set window size
@@ -47,6 +47,7 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		allHealth = new Texture("allHealth.png");
 		bubbleShield = new Texture("playershield.png");
 		smallHeart = new Texture("heart_small.png");
+		background = new Texture("6.png");
 		resetWorld();
 	}
 
@@ -54,7 +55,7 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	public void render() {	
 		Gdx.gl.glClearColor(r, g, b, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		if(!Gdx.input.isKeyPressed(Input.Keys.P)){
+		if(!Gdx.input.isKeyPressed(Input.Keys.P)){//if p is held, the game is paused
 			allRespondToKeys();   //Have each entity respond to any keys
 			allUpdateDirection(); //Have each entity set its new direction, if applicable
 			allUpdatePosition();  //Have each entity update its position based on its new direction
@@ -63,11 +64,11 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 			randomGeneration();   //Generate power-ups and enemies
 		}
 		batch.begin();
+		batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()); //background texture
 		drawGameElements();//Draw all the things to the screen
 		if(allPlayersKilled){ //Displays the YOU DIED screen for a short time, then reset the world.
 			i++;
-			font.draw(batch, "YOU DIED", 550, 300);
-			r = .9f; g = 0f; b = 0f;
+			font.draw(batch, "YOU DIED", 500, 300);
 			if(i == 200)
 				resetWorld();
 		}
@@ -166,101 +167,38 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		}
 	}
 	
-	//This lengthly method goes through and looks at overlapping hit-boxes and responds or ignores the collision
+	//This method goes through and looks at overlapping hit-boxes and responds or ignores the collision
 	public void checkCollision(){
 		//For every game entity, ge, do this
-		//eachEntity: //this is called the each entity loop so that if the eni
 		for(int entityCounter = entities.size()-1; entityCounter >=0; entityCounter--){
 			GameEntity ge = entities.get(entityCounter);
-			//for every bullet, for each game entity, do this
-			eachEntity: //this is called the each entity loop so that if an enemy is removed, it
-						//immediately stops looking at the bullets relating to the enemy.
-			for(int bulletCounter = bullets.size()-1; bulletCounter >= 0; bulletCounter--){
-				Pew bullet = bullets.get(bulletCounter);
-				//if the bullet is hitting the game entity
-				if(bullet.rect.overlaps(ge.rect)){
-					//if the bullet hurts the players and it is a player, or if it does not hurt 
-					//players and it is not a player, then continue to look at the collision
-					if((!bullet.hurtPlayers && !ge.isPlayer) || (bullet.hurtPlayers && ge.isPlayer)){
-						//only continue if the entity is not invincible
-						if(!ge.invincible && !ge.dead){
-							//hurt the entity
-							ge.health -= bullet.damage;  
-							//if the health is less than zero, continue
-							if(ge.health <= 0){
-								if(ge.isPlayer){
-									//if they have an extra life, take it from them and 
-									//return them to their original health
-									if(ge.extraLifeCount > 0){
-										ge.extraLifeCount--;
-										ge.health = ge.maxHealth;
-									}else
-										ge.dead = true; //they die, locking them out of controls and movement.
-									score -= 50; //subtract 50 points for dying
-								}else{ //if the entity is not a player...
-									entities.remove(entityCounter);
-									score += 10;
-									break eachEntity; //since the entity was removed, stop looking at it and
-														  //bullets and go on to the next entity.
-								}
-							}
-							//since the entity has been hurt by the bullet, even if not killed, remove bullet.
-							bullets.remove(bulletCounter);
-						}
-					}
-				}// end looking at their overlapping rectangles 
-			} // end looking at each bullet loop
-			for(int powerUpCounter = powerUps.size()-1; powerUpCounter >= 0; powerUpCounter--){ //for every powerup
-				PowerUp p = powerUps.get(powerUpCounter);
-				if(p.rect.overlaps(ge.rect)){
-					if(ge.isPlayer && !ge.dead){ //if the powerup overlaps the entity box and the entity is a player
-						if(p.id == 0){ //Revive
-							if(ge.extraLifeCount < 2){ //Only add if you have less than two extra lives. 
-								ge.extraLifeCount++;   //only remove if used
-								powerUps.remove(powerUpCounter);
-							}
-						}else if (p.id == 1){ //Triple shot
-							ge.setTripleShot();
-							powerUps.remove(powerUpCounter);
-						}else if(p.id == 2){ //Invincible
-							ge.setInvincible();
-							powerUps.remove(powerUpCounter);
-						}else if(p.id == 3){ //Freeze
-							System.out.println("freeze");
-							powerUps.remove(powerUpCounter);
-						}
-					}
-				}
+			boolean isAlive = true;
+			//the following line deals with bullet collisions and health etc. returns false if the entity died
+			isAlive = CollisionManager.entityBulletCheck(ge, entityCounter); 
+			if(isAlive){
+				CollisionManager.entityPowerUpCheck(ge); //check this entity with all the powerups
+				CollisionManager.entityEntityCheck(ge); //check this entity with all the entities
 			}
-			for(GameEntity ge2: entities){ 			//goes through and see if it is a player touching dead player, 
-				if(ge.rect.overlaps(ge2.rect)){		//then see if it should revive them
-					if((ge.isPlayer && !ge.dead) && (ge2.isPlayer && ge2.dead)){
-						if(ge.extraLifeCount > 0){
-							ge.extraLifeCount--;
-							ge2.dead = false;
-							ge2.health = ge2.maxHealth;
-						}
-					}
-				}
-			}
-		}		
+		}//end gameentity loop		
 	}
 		
+	//randomly determine if there should be generation of a new enemy or powerup
 	public void randomGeneration(){
-		int randInt = (int)(300 * Math.random());
-		if(randInt == 150){
+		int randInt = (int)(400 * Math.random());
+		if(randInt == 150){ //powerups
 			randInt = (int)(3*Math.random());
 			int randX = (int)((Gdx.graphics.getWidth()-32) * Math.random());
 			int randY = (int)((Gdx.graphics.getHeight()-32)* Math.random());
-			pwrup= new PowerUp(randInt, randX, randY);
+			pwrup= new PowerUp(randInt, randX, randY); //id, x, y
 			powerUps.add(pwrup);
 		}
 		randInt = (int)(120 * Math.random());
-		if(randInt == 30){
-			spawnEnemy(1);
+		if(randInt == 30){ //enemy
+			spawnEnemy(1); //only spawn one
 		}
 	}
 
+	//simple test used to see if the coordinates are indeed in the window
 	public boolean areCoordsInWindow(float x, float y){
 		if(x < 0 || x > Gdx.graphics.getWidth() || y < 0 || y > Gdx.graphics.getHeight())
 			return false;
@@ -268,7 +206,8 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 			return true;
 	}
 	
-	public void resetWorld(){
+	//called at the beginning and whenever you make a new game to make a fresh start
+	public void resetWorld(){ 
 		entities.clear();
 		bullets.clear();
 		powerUps.clear();
@@ -276,7 +215,7 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		//Entity constructor is x, y, direction number, speed, sprite sheet, health, isPlayer
 		Hero hero = new Hero(100, 100, 0, 1, hero1Sheet, 7, true);
 		entities.add(hero);
-		Hero2 hero2 = new Hero2(150, 100, 0, 1, hero2Sheet, 7, true);
+		Hero2 hero2 = new Hero2(100, 100, 0, 1, hero2Sheet, 7, true);
 		entities.add(hero2);
 		PowerUp pwr = new PowerUp(2, 400, 200);
 		powerUps.add(pwr);
