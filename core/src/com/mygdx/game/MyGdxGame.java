@@ -26,8 +26,9 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	private BitmapFont font, font2;
 	PowerUp pwrup;
 	Texture hero1Sheet, hero2Sheet, enemy1Sheet, lowHealth, medHealth, mostHealth, allHealth, 
-	bubbleShield, smallHeart, background;
+	bubbleShield, smallHeart, background, startBackground;
 	TextureRegion rect;
+	boolean paused;
 	
 	
 	@Override
@@ -48,6 +49,8 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		bubbleShield = new Texture("playershield.png");
 		smallHeart = new Texture("heart_small.png");
 		background = new Texture("6.png");
+		startBackground = new Texture("startbackground.png");
+		paused = true;
 		resetWorld();
 	}
 
@@ -55,7 +58,10 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 	public void render() {	
 		Gdx.gl.glClearColor(r, g, b, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		if(!Gdx.input.isKeyPressed(Input.Keys.P)){//if p is held, the game is paused
+		if(Gdx.input.isKeyPressed(Input.Keys.P)){
+			paused = true;
+		}
+		if(!paused){//if p is held, the game is paused
 			allRespondToKeys();   //Have each entity respond to any keys
 			allUpdateDirection(); //Have each entity set its new direction, if applicable
 			allUpdatePosition();  //Have each entity update its position based on its new direction
@@ -64,13 +70,20 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 			randomGeneration();   //Generate power-ups and enemies
 		}
 		batch.begin();
-		batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()); //background texture
-		drawGameElements();//Draw all the things to the screen
-		if(allPlayersKilled){ //Displays the YOU DIED screen for a short time, then reset the world.
-			i++;
-			font.draw(batch, "YOU DIED", 500, 300);
-			if(i == 200)
-				resetWorld();
+		if(paused){
+			batch.draw(startBackground, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+			if(Gdx.input.isKeyPressed(Input.Keys.SPACE)){
+				paused = false;
+			}
+		}else{
+			batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()); //background texture
+			drawGameElements();//Draw all the things to the screen
+			if(allPlayersKilled){ //Displays the YOU DIED screen for a short time, then reset the world.
+				i++;
+				font.draw(batch, "YOU DIED", 500, 300);
+				if(i == 200)
+					resetWorld();
+			}
 		}
 		batch.end();
 	}
