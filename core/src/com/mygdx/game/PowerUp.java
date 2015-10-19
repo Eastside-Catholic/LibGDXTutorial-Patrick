@@ -12,13 +12,14 @@ public class PowerUp {
 	static Texture reviveTex = new Texture("heart_small.png");
 	static Texture tripleTex = new Texture("triple.png");
 	static Texture freezeTex = new Texture("ice.png");
-			
-	final static int REVIVEPLAYER = 0, TRIPLESHOT = 1, INVINCIBILITY = 2, FREEZE = 3;
+	final static int REVIVEPLAYER = 0, TRIPLESHOT = 1, INVINCIBILITY = 2, FREEZE = 3;//ids
+	
+	//constructor for each powerup
 	public PowerUp(int id, float x, float y){
 		this.id = id;
 		this.x = x;
 		this.y = y;
-		rect = new Rectangle(x, y, 32, 32);
+		rect = new Rectangle(x, y, 32, 32); //hitbox
 		if(id == 0)
 			texture = reviveTex;
 		if(id == 1)

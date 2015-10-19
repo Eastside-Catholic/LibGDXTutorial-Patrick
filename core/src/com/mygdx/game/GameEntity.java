@@ -14,12 +14,14 @@ public class GameEntity {
 	public int extraLifeCount = 0;
 	public boolean dead;
 	public Animation animation;
-	boolean moving, movingDown, movingDownLeft, movingLeft, movingUpLeft, movingUp, movingUpRight, movingRight, movingDownRight;
+	boolean moving, movingDown, movingDownLeft, movingLeft, movingUpLeft, movingUp, movingUpRight, movingRight, 
+		movingDownRight;
 	boolean isPlayer, tripleShot;
 	final static int DOWN = 0, DOWNLEFT = 1, LEFT = 2, UPLEFT = 3, UP = 4, UPRIGHT = 5, RIGHT = 6, DOWNRIGHT = 7;
 	TextureRegion currentFrame;	
 	float frameTime = 0;
 	
+	//contructor used for all game entities
 	GameEntity(float x, float y, int direction, float speed, Texture spriteSheet1, int health, boolean isPlayer){
 		this.x = x;
 		this.y = y;
@@ -30,6 +32,7 @@ public class GameEntity {
 		maxHealth = health;
 		rect = new Rectangle(x, y, 32, 32);
 		
+		//store all the animation frames
 		downFrames[0] = new TextureRegion(spriteSheet1, 0, 0, 32, 32);
 		downFrames[1] = new TextureRegion(spriteSheet1, 32, 0, 32, 32);
 		downFrames[2] = new TextureRegion(spriteSheet1, 64, 0, 32, 32);
@@ -66,18 +69,20 @@ public class GameEntity {
 	}
 	
 	public void setInvincible(){
+		//set invincible to true
 		invincibleTimer = 0;
 		invincible = true;
-		
 	}
 	
 	public void setTripleShot(){
+		//set tripleshot to true
 		tripleShotTimer = 0;
 		tripleShot = true;
 		
 	}
 	
 	public void updateDirection(){
+		//based on the movement direction set the direction and animation
 		if(dead){
 			setAllDirectionsFalse();
 			animation = new Animation(.10f, deadFrames[0]);
@@ -107,7 +112,7 @@ public class GameEntity {
 			animation = new Animation(.10f, upRightFrames);
 		}
 		
-		//Find the frame for each direction to hold it still
+		//Find the frame for each direction to hold it still if it is not moving
 		if(!moving){
 			if(dead)
 				animation = new Animation(.10f, deadFrames[0]);
@@ -131,6 +136,7 @@ public class GameEntity {
 	}
 	
 	public void updatePosition(){
+		//actually update the coordinates of the entity based on the movement direction
 		if(movingDown){
 			attemptYCoordChange(-speed);
 		}
@@ -172,8 +178,28 @@ public class GameEntity {
 		}
 	}
 	
-	public void makeBullet(){
-		//Be sure to fill this out if you want the entity to make the bullets!
+	public void makeBullet(Texture bullet){
+		//this method is only called by players, and the enemy has a different, simple, makeBullet mathod
+		//x, y, direction, speed, texture, damage, hurts players
+		Pew newPew = new Pew(x, y, direction, 4, bullet, 1, false);
+		MyGdxGame.bullets.add(newPew);
+		if(tripleShot){
+			int direction1, direction2;
+			if(direction == 0){
+				direction1 = 1;
+				direction2 = 7;
+			}else if (direction == 7){
+				direction1 = 0;
+				direction2 = 6;
+			}else{
+				direction1 = direction + 1;
+				direction2 = direction -1;
+			}
+			Pew newPew2 = new Pew(x, y, direction1, 4, bullet, 1, false);
+			Pew newPew3 = new Pew(x, y, direction2, 4, bullet, 1, false);
+			MyGdxGame.bullets.add(newPew2);
+			MyGdxGame.bullets.add(newPew3);
+		}
 	}
 	
 	public TextureRegion getCurrentFrame(){
@@ -183,6 +209,7 @@ public class GameEntity {
 	}
 	
 	public void attemptYCoordChange(float y){
+		//projects the y coordinate change and then changes it if within the screen
 		float projectedY = this.y + y;
 		if(projectedY >= 0 && projectedY <= Gdx.graphics.getHeight() - 32){
 			this.y = projectedY;
@@ -190,6 +217,7 @@ public class GameEntity {
 	}
 	
 	public void attemptXCoordChange(float x){
+		//projects the x coordinate change and then changes it if within the screen
 		float projectedX = this.x + x;
 		if(projectedX >= 0 && projectedX <= Gdx.graphics.getWidth() -32){
 			this.x = projectedX;
@@ -197,6 +225,7 @@ public class GameEntity {
 	}
 	
 	public void setAllDirectionsFalse(){
+		//set all movement to false
 		movingDown = false;
 		movingDownLeft = false;
 		movingLeft = false;
@@ -207,6 +236,7 @@ public class GameEntity {
 		movingDownRight = false;
 	}
 	
+	//the arrays to store animations
 	TextureRegion[] downFrames = new TextureRegion[3];
 	TextureRegion[] upFrames = new TextureRegion[3];
 	TextureRegion[] rightFrames = new TextureRegion[3];

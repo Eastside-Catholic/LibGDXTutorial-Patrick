@@ -8,6 +8,8 @@ public class Enemy extends GameEntity{
 	float timeSummary;
 	float timeGoal = (float)(3*Math.random()) +(float)2.5;
 	Texture greenBullet = new Texture("bullet-green-icon.png");
+	
+	//these are magic numbers that are acquired from trigonometry. sin(45/2) and sin(90-(45/2)).
 	final static float POINTFOURONE = (float) 0.41421, TWOPOINTFOUR = (float)2.414; 
 	Enemy(float x, float y, int direction, float speed, Texture spriteSheet1, int health, boolean isPlayer){
 		super(x, y, direction, speed, spriteSheet1, health, isPlayer);
@@ -15,6 +17,7 @@ public class Enemy extends GameEntity{
 	
 	@Override
 	public void respondToKeys(){
+		//make bullets as well as go through some more complex calculations to find and look towards the player
 		timeSummary += Gdx.graphics.getDeltaTime();
 		if(timeSummary > timeGoal){
 			makeBullet();
@@ -43,6 +46,7 @@ public class Enemy extends GameEntity{
 				i++;
 			}
 		}
+		//determines the coordinate of the coordinates of the player closest to it, or affirms all players as dead.
 		if(!player1Exists && !player2Exists){
 			targetXCoord = x;
 			targetYCoord = y - 1;
@@ -63,8 +67,8 @@ public class Enemy extends GameEntity{
 				targetYCoord = y1;
 			}
 		}
-		float diffX = targetXCoord - x;//0
-		float diffY = targetYCoord - y;//1
+		float diffX = targetXCoord - x;
+		float diffY = targetYCoord - y;
 		float slope = diffY/diffX;		
 
 		

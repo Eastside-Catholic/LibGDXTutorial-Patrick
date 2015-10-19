@@ -38,6 +38,7 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		font2.setColor(Color.BLACK);
 		Gdx.graphics.setDisplayMode(1067, 600, false); //set window size
 		batch = new SpriteBatch();
+		//load all textures that you are using. I do not own these textures! Please see Google Images.
 		hero1Sheet = new Texture("Hero.jpg"); //load textures
 		hero2Sheet = new Texture("Hero2.png");
 		enemy1Sheet = new Texture("Enemy1.jpg");
@@ -58,7 +59,7 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		if(Gdx.input.isKeyPressed(Input.Keys.P)){
-			paused = true;
+			paused = true; //pause the game
 		}
 		if(!paused){//if p is held, the game is paused
 			allRespondToKeys();   //Have each entity respond to any keys
@@ -69,6 +70,7 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 			randomGeneration();   //Generate power-ups and enemies
 		}
 		batch.begin();
+		//if paused, show the other background and not the game.
 		if(paused){
 			batch.draw(startBackground, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 			if(Gdx.input.isKeyPressed(Input.Keys.SPACE)){

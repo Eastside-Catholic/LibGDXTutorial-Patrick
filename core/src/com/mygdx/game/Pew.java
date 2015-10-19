@@ -11,6 +11,7 @@ public class Pew{
 	Rectangle rect;
 	Texture bulletTexture;
 	
+	//constructor for every bullet
 	Pew(float x, float y, int direction, float speed, Texture texture, int damage, boolean hurtPlayers){
 		this.x = x;
 		this.y = y;
@@ -23,13 +24,14 @@ public class Pew{
 		rect = new Rectangle(x, y, 16, 16);
 	}
 	
-	//Returns true if it updates successfully, or returns false if it travels out of bounds of the screen.
+	//update the coordinates of the bullet. deleting it if it goes outside of the window is handled in main class
 	public void update(){
 		x += vectorX;
 		y += vectorY;
 		rect.setPosition(x, y);
 	}
 	
+	//direction vector to numerical x component of the vector
 	public float directionToXVector(int direction){
 		if(direction == DOWNLEFT || direction == LEFT || direction == UPLEFT)
 			return -1;
@@ -39,7 +41,7 @@ public class Pew{
 			return 0;
 	}
 	
-	//Returns the x 
+	//direction vector to numerical y component of the vector
 	public float directionToYVector(int direction){
 		if(direction == DOWNLEFT || direction == DOWN || direction == DOWNRIGHT)
 			return -1;

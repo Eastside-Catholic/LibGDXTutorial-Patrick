@@ -14,9 +14,10 @@ public class Hero2 extends GameEntity {
 	
 	@Override
 	public void respondToKeys(){
+		//make bullets and set the direction based on the keys that are pressed
 		timeSummary += Gdx.graphics.getDeltaTime();
 		if(Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT) && timeSummary > 0.3){
-			makeBullet();
+			makeBullet(blueBullet);
 			timeSummary = 0;
 		}
 		setAllDirectionsFalse();
@@ -47,29 +48,5 @@ public class Hero2 extends GameEntity {
 			return;
 		}
 		moving = false;
-	}
-	
-	@Override
-	public void makeBullet(){
-		//x, y, direction, speed, texture, damage, hurts players
-		Pew newPew = new Pew(x, y, direction, 4, new Texture("bullet-blue-icon.png"), 1, false);
-		MyGdxGame.bullets.add(newPew);
-		if(tripleShot){
-			int direction1, direction2;
-			if(direction == 0){
-				direction1 = 1;
-				direction2 = 7;
-			}else if (direction == 7){
-				direction1 = 0;
-				direction2 = 6;
-			}else{
-				direction1 = direction + 1;
-				direction2 = direction -1;
-			}
-			Pew newPew2 = new Pew(x, y, direction1, 4, blueBullet, 1, false);
-			Pew newPew3 = new Pew(x, y, direction2, 4, blueBullet, 1, false);
-			MyGdxGame.bullets.add(newPew2);
-			MyGdxGame.bullets.add(newPew3);
-		}
 	}
 }
