@@ -89,30 +89,7 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		batch.end();
 	}
 	
-	public void spawnEnemy(int num){
-		int side, randX = 0, randY = 0;
-		final int  LEFT = 0, UP = 1, RIGHT = 2, DOWN = 3;
-		//for every number of entities that you call to spawn
-		for(int x = num; x > 0; x--){
-			side = (int)(Math.random() * 4);//choose a random side to spawn on
-			if(side == LEFT){
-				randX = 0;
-				randY =(int)(Math.random() * (Gdx.graphics.getHeight() - 32));
-			}else if (side == UP){
-				randX =(int)(Math.random() * (Gdx.graphics.getWidth() - 32));     //find out the random x and y for
-				randY = Gdx.graphics.getHeight()-32;							  //each side of the wall
-			}else if (side == RIGHT){
-				randX = Gdx.graphics.getWidth() - 32;
-				randY =(int)(Math.random() * (Gdx.graphics.getHeight() - 32));
-			}else if (side == DOWN){
-				randX =(int)(Math.random() * (Gdx.graphics.getWidth() - 32));
-				randY = 0;
-			}
-			//Entity constructor is x, y, direction number, speed, sprite sheet, health, isPlayer
-			Enemy enemy1 = new Enemy(randX, randY, 0, (float).5, enemy1Sheet, 5, false);
-			entities.add(enemy1);
-		}
-	}
+	
 	
 	public void drawGameElements(){
 		//start by drawing all entities with their health bar, extra lives, and invincible bubble, as applicable.
@@ -218,6 +195,31 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 			return false;
 		else
 			return true;
+	}
+	
+	public void spawnEnemy(int num){
+		int side, randX = 0, randY = 0;
+		final int  LEFT = 0, UP = 1, RIGHT = 2, DOWN = 3;
+		//for every number of entities that you call to spawn
+		for(int x = num; x > 0; x--){
+			side = (int)(Math.random() * 4);//choose a random side to spawn on
+			if(side == LEFT){
+				randX = 0;
+				randY =(int)(Math.random() * (Gdx.graphics.getHeight() - 32));
+			}else if (side == UP){
+				randX =(int)(Math.random() * (Gdx.graphics.getWidth() - 32));     //find out the random x and y for
+				randY = Gdx.graphics.getHeight()-32;							  //each side of the wall
+			}else if (side == RIGHT){
+				randX = Gdx.graphics.getWidth() - 32;
+				randY =(int)(Math.random() * (Gdx.graphics.getHeight() - 32));
+			}else if (side == DOWN){
+				randX =(int)(Math.random() * (Gdx.graphics.getWidth() - 32));
+				randY = 0;
+			}
+			//Entity constructor is x, y, direction number, speed, sprite sheet, health, isPlayer
+			Enemy enemy1 = new Enemy(randX, randY, 0, (float).5, enemy1Sheet, 5, false);
+			entities.add(enemy1);
+		}
 	}
 	
 	//called at the beginning and whenever you make a new game to make a fresh start
