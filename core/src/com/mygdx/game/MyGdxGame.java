@@ -44,7 +44,7 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		enemy1Sheet = new Texture("Enemy1.jpg");
 		lowHealth = new Texture("lowHealth.png");
 		medHealth = new Texture("someHealth.png");
-		mostHealth = new Texture("mostHealth.png");
+		mostHealth = new Texture("mosthealth.png");
 		allHealth = new Texture("allHealth.png");
 		bubbleShield = new Texture("playershield.png");
 		smallHeart = new Texture("heart_small.png");
@@ -229,10 +229,10 @@ public class MyGdxGame extends ApplicationAdapter implements ApplicationListener
 		powerUps.clear();
 		score = 0;
 		//Entity constructor is x, y, direction number, speed, sprite sheet, health, isPlayer
-		Hero hero = new Hero(100, Gdx.graphics.getHeight()/2, 0, 1, hero1Sheet, 7, true);
+		Hero hero = new Hero(100, Gdx.graphics.getHeight()/2, 0, 1, hero1Sheet, 8, true);
 		entities.add(hero);
 		Hero2 hero2 = new Hero2(Gdx.graphics.getWidth() -100, Gdx.graphics.getHeight()/2, 0, 1, 
-				hero2Sheet, 7, true);
+				hero2Sheet, 8, true);
 		entities.add(hero2);
 		allPlayersKilled = false;
 		i =  0;
